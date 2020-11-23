@@ -1,3 +1,3 @@
 rootProject.name = 'ark-event'
-include 'ark-event-core', 'ark-event-mq', 'ark-event-spring-boot-starter'
+include 'ark-event-core', 'ark-event-mq', 'ark-event-mq-rabbit', 'ark-event-spring-boot-starter'
 

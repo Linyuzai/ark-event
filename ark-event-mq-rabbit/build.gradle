@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'com.github.linyuzai'
-version = '0.1.0.20201120'
+version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '1.8'
 
 repositories {
@@ -27,15 +27,12 @@ repositories {
 }
 
 dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter'
+    implementation 'org.springframework.boot:spring-boot-starter-amqp'
     implementation project(':ark-event-core')
     implementation project(':ark-event-mq')
-    //implementation fileTree(dir: 'lib', includes: ['*.jar'])
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.amqp:spring-rabbit-test'
 }
-
-bootJar.enabled = false
-jar.enabled = true
 
 test {
     useJUnitPlatform()
