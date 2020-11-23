@@ -4,7 +4,7 @@ public interface ArkEventGroup {
 
     String[] arkEventGroups();
 
-    default boolean forceGroupCondition() {
+    default boolean requireGroupCondition() {
         return false;
     }
 }

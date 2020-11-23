@@ -14,13 +14,15 @@ public class DefaultArkEventDispatcher implements ArkEventDispatcher {
 
     private Map<Class<? extends ArkEventSubscriber>, ArkEventPublishStrategy> subscriberPublishStrategyMap = new ConcurrentHashMap<>();
 
+    private Map<Class<? extends ArkEventSubscriber>, ArkEventExceptionHandler> subscriberExceptionHandlerMap = new ConcurrentHashMap<>();
+
     private Collection<ArkEventSubscriber> subscribers = new CopyOnWriteArrayList<>();
 
     private Collection<ArkEventConditionFilter.Factory> conditionFilterFactories = new CopyOnWriteArrayList<>();
 
     private Collection<ArkEventPublishStrategy.Adapter> publishStrategyAdapters = new CopyOnWriteArrayList<>();
 
-    private ArkEventExceptionHandler exceptionHandler;
+    private Collection<ArkEventExceptionHandler.Adapter> exceptionHandlerAdapters = new CopyOnWriteArrayList<>();
 
     public void registerSubscriber(Collection<? extends ArkEventSubscriber> subscribers) {
         subscribers.forEach(this::registerSubscriber);
@@ -33,6 +35,11 @@ public class DefaultArkEventDispatcher implements ArkEventDispatcher {
         subscribers.add(subscriber);
         filterConditions(subscriber);
         adaptPublishStrategy(subscriber);
+        adaptExceptionHandler(subscriber);
+    }
+
+    public Collection<ArkEventSubscriber> getSubscribers() {
+        return subscribers;
     }
 
     private void filterConditions(ArkEventSubscriber subscriber) {
@@ -49,10 +56,6 @@ public class DefaultArkEventDispatcher implements ArkEventDispatcher {
         }
     }
 
-    public Collection<ArkEventSubscriber> getSubscribers() {
-        return subscribers;
-    }
-
     public void addConditionFilterFactory(Collection<? extends ArkEventConditionFilter.Factory> factories) {
         factories.forEach(this::addConditionFilterFactory);
     }
@@ -63,6 +66,10 @@ public class DefaultArkEventDispatcher implements ArkEventDispatcher {
         }
         conditionFilterFactories.add(factory);
         refreshConditionFilters(factory);
+    }
+
+    public Collection<ArkEventConditionFilter.Factory> getConditionFilterFactories() {
+        return conditionFilterFactories;
     }
 
     private void refreshConditionFilters(ArkEventConditionFilter.Factory filterFactory) {
@@ -79,10 +86,6 @@ public class DefaultArkEventDispatcher implements ArkEventDispatcher {
         }
     }
 
-    public Collection<ArkEventConditionFilter.Factory> getConditionFilterFactories() {
-        return conditionFilterFactories;
-    }
-
     public void addPublishStrategyAdapter(Collection<? extends ArkEventPublishStrategy.Adapter> adapters) {
         adapters.forEach(this::addPublishStrategyAdapter);
     }
@@ -97,6 +100,10 @@ public class DefaultArkEventDispatcher implements ArkEventDispatcher {
         }
     }
 
+    public Collection<ArkEventPublishStrategy.Adapter> getPublishStrategyAdapters() {
+        return publishStrategyAdapters;
+    }
+
     private void adaptPublishStrategy(ArkEventSubscriber subscriber) {
         for (ArkEventPublishStrategy.Adapter strategyAdapter : publishStrategyAdapters) {
             ArkEventPublishStrategy strategy = strategyAdapter.adapt(subscriber);
@@ -107,64 +114,66 @@ public class DefaultArkEventDispatcher implements ArkEventDispatcher {
         }
     }
 
-    public Collection<ArkEventPublishStrategy.Adapter> getPublishStrategyAdapters() {
-        return publishStrategyAdapters;
+    public void addExceptionHandlerAdapter(Collection<? extends ArkEventExceptionHandler.Adapter> adapters) {
+        adapters.forEach(this::addExceptionHandlerAdapter);
     }
 
-    public ArkEventExceptionHandler getExceptionHandler() {
-        return exceptionHandler;
+    public synchronized void addExceptionHandlerAdapter(ArkEventExceptionHandler.Adapter adapter) {
+        if (adapter == null) {
+            throw new ArkEventException("ArkEventExceptionHandler.Adapter is null");
+        }
+        this.exceptionHandlerAdapters.add(adapter);
+        for (ArkEventSubscriber subscriber : subscribers) {
+            adaptExceptionHandler(subscriber);
+        }
     }
 
-    public void setExceptionHandler(ArkEventExceptionHandler exceptionHandler) {
-        this.exceptionHandler = exceptionHandler;
+    public Collection<ArkEventExceptionHandler.Adapter> getExceptionHandlerAdapters() {
+        return exceptionHandlerAdapters;
+    }
+
+    private void adaptExceptionHandler(ArkEventSubscriber subscriber) {
+        for (ArkEventExceptionHandler.Adapter handlerAdapter : exceptionHandlerAdapters) {
+            ArkEventExceptionHandler handler = handlerAdapter.adapt(subscriber);
+            if (handler != null) {
+                subscriberExceptionHandlerMap.put(subscriber.getClass(), handler);
+                break;
+            }
+        }
     }
 
     @Override
-    public void dispatch(ArkEvent event) {
-        ArkEvent.PublishConfiguration configuration = event.getPublishConfiguration() == null ?
-                ArkEvent.PublishConfiguration.EMPTY : event.getPublishConfiguration();
-        ArkEventExceptionHandler ce = configuration.getEventExceptionHandler() == null ?
-                exceptionHandler : configuration.getEventExceptionHandler();
-        if (ce == null) {
-            throw new ArkEventException("ArkEventExceptionHandler is null");
-        }
+    public void dispatch(ArkEvent event, Object... args) {
         List<ArkEventSubscriber> filterSubscribers = new ArrayList<>();
         for (ArkEventSubscriber subscriber : subscribers) {
             Collection<ArkEventConditionFilter> filters = subscriberConditionFilterMap.getOrDefault(subscriber.getClass(), Collections.emptySet());
-            Collection<ArkEventConditionFilter> allFilters = new ArrayList<>(filters);
-            Collection<ArkEventConditionFilter> cfs = configuration.getConditionFilters();
-            if (cfs != null) {
-                allFilters.addAll(cfs);
-            }
-            if (filterSubscriber(event, allFilters)) {
+            if (filterSubscriber(filters, event, args)) {
                 filterSubscribers.add(subscriber);
             }
         }
         List<ArkEventPublisher> publishers = new ArrayList<>();
-        ArkEventPublishStrategy cs = configuration.getPublishStrategy();
-        if (cs == null) {
-            for (ArkEventSubscriber filterSubscriber : filterSubscribers) {
-                ArkEventPublishStrategy strategy = subscriberPublishStrategyMap.get(filterSubscriber.getClass());
-                if (strategy != null) {
-                    publishers.add(new DefaultArkEventPublisher(filterSubscriber, strategy, ce));
-                }
+        for (ArkEventSubscriber filterSubscriber : filterSubscribers) {
+            ArkEventPublishStrategy strategy = subscriberPublishStrategyMap.get(filterSubscriber.getClass());
+            if (strategy == null) {
+                throw new ArkEventException("No execute strategy found");
             }
-        } else {
-            for (ArkEventSubscriber filterSubscriber : filterSubscribers) {
-                publishers.add(new DefaultArkEventPublisher(filterSubscriber, cs, ce));
+            ArkEventExceptionHandler handler = subscriberExceptionHandlerMap.get(filterSubscriber.getClass());
+            if (handler == null) {
+                throw new ArkEventException("No exception handler found");
             }
+            publishers.add(new DefaultArkEventPublisher(filterSubscriber, strategy, handler));
         }
         for (ArkEventPublisher publisher : publishers) {
-            publisher.publish(event);
+            publisher.publish(event, args);
         }
     }
 
-    private boolean filterSubscriber(ArkEvent event, Collection<ArkEventConditionFilter> filters) {
+    private boolean filterSubscriber(Collection<ArkEventConditionFilter> filters, ArkEvent event, Object... args) {
         if (filters == null) {
             return false;
         }
         for (ArkEventConditionFilter filter : filters) {
-            if (!filter.filter(event)) {
+            if (!filter.filter(event, args)) {
                 return false;
             }
         }

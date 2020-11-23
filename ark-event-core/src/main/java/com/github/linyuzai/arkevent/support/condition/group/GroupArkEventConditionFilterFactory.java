@@ -10,14 +10,14 @@ public class GroupArkEventConditionFilterFactory implements ArkEventConditionFil
         if (subscriber instanceof ArkEventGroup) {
             ArkEventGroup arkEventGroup = (ArkEventGroup) subscriber;
             String[] groups = arkEventGroup.arkEventGroups();
-            boolean forceGroupCondition = arkEventGroup.forceGroupCondition();
-            return new GroupArkEventConditionFilter(groups, forceGroupCondition);
+            boolean requireGroupCondition = arkEventGroup.requireGroupCondition();
+            return new GroupArkEventConditionFilter(groups, requireGroupCondition);
         }
         OnArkEventGroup onArkEventGroup = subscriber.getClass().getAnnotation(OnArkEventGroup.class);
         if (onArkEventGroup != null) {
             String[] groups = onArkEventGroup.value();
-            boolean forceGroupCondition = onArkEventGroup.forceGroupCondition();
-            return new GroupArkEventConditionFilter(groups, forceGroupCondition);
+            boolean requireGroupCondition = onArkEventGroup.requireGroupCondition();
+            return new GroupArkEventConditionFilter(groups, requireGroupCondition);
         }
         return null;
     }

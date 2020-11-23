@@ -9,5 +9,5 @@ public @interface OnArkEventGroup {
 
     String[] value();
 
-    boolean forceGroupCondition() default false;
+    boolean requireGroupCondition() default false;
 }

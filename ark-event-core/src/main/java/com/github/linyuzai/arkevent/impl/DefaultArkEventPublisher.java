@@ -8,9 +8,9 @@ import com.github.linyuzai.arkevent.ArkEventPublishStrategy;
 
 public class DefaultArkEventPublisher implements ArkEventPublisher {
 
-    private ArkEventSubscriber subscriber;
-
     private ArkEventPublishStrategy strategy;
+
+    private ArkEventSubscriber subscriber;
 
     private ArkEventExceptionHandler handler;
 
@@ -21,7 +21,7 @@ public class DefaultArkEventPublisher implements ArkEventPublisher {
     }
 
     @Override
-    public void publish(ArkEvent event) {
-        strategy.publish(subscriber, event, handler);
+    public void publish(ArkEvent event, Object... args) {
+        strategy.execute(subscriber, handler, event, args);
     }
 }

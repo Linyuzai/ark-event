@@ -2,7 +2,7 @@ package com.github.linyuzai.arkevent;
 
 public interface ArkEventConditionFilter {
 
-    boolean filter(ArkEvent event);
+    boolean filter(ArkEvent event, Object... args);
 
     interface Factory {
 

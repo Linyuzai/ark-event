@@ -1,9 +1,6 @@
 package com.github.linyuzai.arkevent.support.strategy.async;
 
-import com.github.linyuzai.arkevent.ArkEvent;
-import com.github.linyuzai.arkevent.ArkEventExceptionHandler;
-import com.github.linyuzai.arkevent.ArkEventPublishStrategy;
-import com.github.linyuzai.arkevent.ArkEventSubscriber;
+import com.github.linyuzai.arkevent.*;
 import com.github.linyuzai.arkevent.exception.ArkEventException;
 
 import java.util.concurrent.ExecutorService;
@@ -26,12 +23,12 @@ public class AsyncArkEventPublishStrategy implements ArkEventPublishStrategy {
     }
 
     @Override
-    public void publish(ArkEventSubscriber subscriber, ArkEvent event, ArkEventExceptionHandler handler) {
+    public void execute(ArkEventSubscriber subscriber, ArkEventExceptionHandler handler, ArkEvent event, Object... args) {
         executorService.execute(() -> {
             try {
-                subscriber.onSubscribe(event);
+                subscriber.onSubscribe(event, args);
             } catch (Throwable e) {
-                handler.handle(new ArkEventException(e, event, subscriber, this));
+                handler.handle(new ArkEventException(e, subscriber, this, event, args));
             }
         });
     }

@@ -2,7 +2,7 @@ package com.github.linyuzai.arkevent;
 
 public interface ArkEventPublishStrategy {
 
-    void publish(ArkEventSubscriber subscriber, ArkEvent event, ArkEventExceptionHandler handler);
+    void execute(ArkEventSubscriber subscriber, ArkEventExceptionHandler handler, ArkEvent event, Object... args);
 
     interface Adapter {
 

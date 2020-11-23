@@ -16,7 +16,7 @@ public class TypeArkEventConditionFilter implements ArkEventConditionFilter {
     }
 
     @Override
-    public boolean filter(ArkEvent event) {
+    public boolean filter(ArkEvent event, Object... args) {
         Class<?> target = event.getClass();
         if (inherited) {
             for (Class<?> c : classes) {

@@ -6,15 +6,17 @@ import com.github.linyuzai.arkevent.ArkEventSubscriber;
 
 public class ArkEventException extends RuntimeException {
 
-    private ArkEvent event;
     private ArkEventSubscriber subscriber;
     private ArkEventPublishStrategy strategy;
+    private ArkEvent event;
+    private Object[] args;
 
-    public ArkEventException(Throwable cause, ArkEvent event, ArkEventSubscriber subscriber, ArkEventPublishStrategy strategy) {
+    public ArkEventException(Throwable cause, ArkEventSubscriber subscriber, ArkEventPublishStrategy strategy, ArkEvent event, Object... args) {
         super(cause);
-        this.event = event;
         this.subscriber = subscriber;
         this.strategy = strategy;
+        this.event = event;
+        this.args = args;
     }
 
     public ArkEventException() {
@@ -36,14 +38,6 @@ public class ArkEventException extends RuntimeException {
         super(message, cause, enableSuppression, writableStackTrace);
     }
 
-    public void setEvent(ArkEvent event) {
-        this.event = event;
-    }
-
-    public ArkEvent getEvent() {
-        return event;
-    }
-
     public void setSubscriber(ArkEventSubscriber subscriber) {
         this.subscriber = subscriber;
     }
@@ -58,5 +52,21 @@ public class ArkEventException extends RuntimeException {
 
     public ArkEventPublishStrategy getStrategy() {
         return strategy;
+    }
+
+    public void setEvent(ArkEvent event) {
+        this.event = event;
+    }
+
+    public ArkEvent getEvent() {
+        return event;
+    }
+
+    public void setArgs(Object... args) {
+        this.args = args;
+    }
+
+    public Object[] getArgs() {
+        return args;
     }
 }

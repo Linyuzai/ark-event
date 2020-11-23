@@ -9,11 +9,11 @@ import com.github.linyuzai.arkevent.exception.ArkEventException;
 public class DirectArkEventPublishStrategy implements ArkEventPublishStrategy {
 
     @Override
-    public void publish(ArkEventSubscriber subscriber, ArkEvent event, ArkEventExceptionHandler handler) {
+    public void execute(ArkEventSubscriber subscriber, ArkEventExceptionHandler handler, ArkEvent event, Object... args) {
         try {
-            subscriber.onSubscribe(event);
+            subscriber.onSubscribe(event, args);
         } catch (Throwable e) {
-            handler.handle(new ArkEventException(e, event, subscriber, this));
+            handler.handle(new ArkEventException(e, subscriber, this, event, args));
         }
     }
 }

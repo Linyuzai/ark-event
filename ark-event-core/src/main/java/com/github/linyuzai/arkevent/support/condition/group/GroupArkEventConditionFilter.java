@@ -11,37 +11,56 @@ public class GroupArkEventConditionFilter implements ArkEventConditionFilter {
 
     private String[] groups;
 
-    private boolean forceGroupCondition;
+    private boolean requireGroupCondition;
 
-    public GroupArkEventConditionFilter(String[] groups, boolean forceGroupCondition) {
-        this.groups = groups;
-        this.forceGroupCondition = forceGroupCondition;
+    public GroupArkEventConditionFilter(String[] groups, boolean requireGroupCondition) {
+        this.groups = groups == null ? new String[]{} : groups;
+        this.requireGroupCondition = requireGroupCondition;
     }
 
     @Override
-    public boolean filter(ArkEvent event) {
+    public boolean filter(ArkEvent event, Object... args) {
+        boolean hasInclude = false;
+        boolean hasExclude = false;
+        String[] includes = null;
+        String[] excludes = null;
         if (event instanceof ArkEventGroupInclude) {
+            hasInclude = true;
             ArkEventGroupInclude arkEventGroupInclude = (ArkEventGroupInclude) event;
-            String[] targets = arkEventGroupInclude.arkEventIncludeGroups();
-            return filter0(targets);
-        } else if (event instanceof ArkEventGroupExclude) {
-            ArkEventGroupExclude arkEventGroupExclude = (ArkEventGroupExclude) event;
-            String[] targets = arkEventGroupExclude.arkEventExcludeGroups();
-            return filter0(targets);
-        } else if (event.getClass().isAssignableFrom(OnArkEventGroupInclude.class)) {
-            OnArkEventGroupInclude onArkEventGroupInclude = event.getClass().getAnnotation(OnArkEventGroupInclude.class);
-            String[] targets = onArkEventGroupInclude.value();
-            return filter0(targets);
-        } else if (event.getClass().isAssignableFrom(OnArkEventGroupExclude.class)) {
-            OnArkEventGroupExclude onArkEventGroupExclude = event.getClass().getAnnotation(OnArkEventGroupExclude.class);
-            String[] targets = onArkEventGroupExclude.value();
-            return filter0(targets);
+            includes = arkEventGroupInclude.arkEventIncludeGroups();
         } else {
-            return !forceGroupCondition;
+            OnArkEventGroupInclude onArkEventGroupInclude = event.getClass().getAnnotation(OnArkEventGroupInclude.class);
+            if (onArkEventGroupInclude != null) {
+                hasInclude = true;
+                includes = onArkEventGroupInclude.value();
+            }
+        }
+        if (event instanceof ArkEventGroupExclude) {
+            hasExclude = true;
+            ArkEventGroupExclude arkEventGroupExclude = (ArkEventGroupExclude) event;
+            excludes = arkEventGroupExclude.arkEventExcludeGroups();
+        } else {
+            OnArkEventGroupExclude onArkEventGroupExclude = event.getClass().getAnnotation(OnArkEventGroupExclude.class);
+            if (onArkEventGroupExclude != null) {
+                hasExclude = true;
+                excludes = onArkEventGroupExclude.value();
+            }
+        }
+        if (hasInclude && hasExclude) {
+            return include(includes) && exclude(excludes);
+        } else if (hasInclude) {
+            return include(includes);
+        } else if (hasExclude) {
+            return exclude(excludes);
+        } else {
+            return !requireGroupCondition;
         }
     }
 
-    private boolean filter0(String[] targets) {
+    private boolean include(String[] targets) {
+        if (targets == null) {
+            return false;
+        }
         for (String target : targets) {
             for (String group : groups) {
                 if (target.equals(group)) {
@@ -50,5 +69,19 @@ public class GroupArkEventConditionFilter implements ArkEventConditionFilter {
             }
         }
         return false;
+    }
+
+    private boolean exclude(String[] targets) {
+        if (targets == null) {
+            return true;
+        }
+        for (String target : targets) {
+            for (String group : groups) {
+                if (target.equals(group)) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 }
