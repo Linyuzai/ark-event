@@ -35,14 +35,14 @@ public class ArkEventAutoConfiguration {
 
     @Bean
     public ArkEventDispatcher arkEventDispatcher(List<ArkEventSubscriber> subscribers,
-                                                 List<ArkEventConditionFilter.Factory> factories,
-                                                 List<ArkEventPublishStrategy.Adapter> adapters,
-                                                 ArkEventExceptionHandler handler) {
+                                                 List<ArkEventConditionFilter.Factory> conditionFilterFactories,
+                                                 List<ArkEventPublishStrategy.Adapter> publishStrategyAdapters,
+                                                 List<ArkEventExceptionHandler.Adapter> exceptionHandlerAdapters) {
         DefaultArkEventDispatcher dispatcher = new DefaultArkEventDispatcher();
-        dispatcher.addConditionFilterFactory(factories);
-        dispatcher.addPublishStrategyAdapter(adapters);
+        dispatcher.addConditionFilterFactory(conditionFilterFactories);
+        dispatcher.addPublishStrategyAdapter(publishStrategyAdapters);
+        dispatcher.addExceptionHandlerAdapter(exceptionHandlerAdapters);
         dispatcher.registerSubscriber(subscribers);
-        dispatcher.setExceptionHandler(handler);
         ArkEventPlugin.setDispatcher(dispatcher);
         return dispatcher;
     }
