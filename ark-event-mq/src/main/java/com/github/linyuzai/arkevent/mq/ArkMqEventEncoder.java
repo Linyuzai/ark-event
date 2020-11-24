@@ -4,5 +4,5 @@ import com.github.linyuzai.arkevent.ArkEvent;
 
 public interface ArkMqEventEncoder {
 
-    String encode(ArkEvent event);
+    String encode(ArkEvent event) throws Throwable;
 }

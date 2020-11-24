@@ -13,7 +13,7 @@ public class ArkMqEventReceiverImpl implements ArkMqEventReceiver {
     }
 
     @Override
-    public void receive(String event) {
+    public void receive(String event) throws Throwable {
         decoder.decode(event).publish(ArkEventFromMq.mask());
     }
 }

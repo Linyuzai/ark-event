@@ -4,5 +4,5 @@ import com.github.linyuzai.arkevent.ArkEvent;
 
 public interface ArkMqEventDecoder {
 
-    ArkEvent decode(String event);
+    ArkEvent decode(String event) throws Throwable;
 }

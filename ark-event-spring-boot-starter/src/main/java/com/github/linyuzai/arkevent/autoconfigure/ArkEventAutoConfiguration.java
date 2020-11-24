@@ -52,7 +52,7 @@ public class ArkEventAutoConfiguration {
     }
 
     @Bean
-    public ArkEventDispatcher arkEventDispatcher(List<ArkEventSubscriber> subscribers,
+    public ArkEventDispatcherImpl arkEventDispatcher(List<ArkEventSubscriber> subscribers,
                                                  List<ArkEventConditionFilter.Factory> conditionFilterFactories,
                                                  List<ArkEventPublishStrategy.Adapter> publishStrategyAdapters,
                                                  List<ArkEventExceptionHandler.Adapter> exceptionHandlerAdapters) {
