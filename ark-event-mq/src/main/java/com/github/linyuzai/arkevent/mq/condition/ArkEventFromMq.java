@@ -1,8 +1,8 @@
 package com.github.linyuzai.arkevent.mq.condition;
 
-import com.github.linyuzai.arkevent.ArkEventFromAny;
+import com.github.linyuzai.arkevent.ArkEventFromRemote;
 
-public class ArkEventFromMq implements ArkEventFromAny {
+public class ArkEventFromMq implements ArkEventFromRemote {
 
     private static final ArkEventFromMq mask = new ArkEventFromMq();
 

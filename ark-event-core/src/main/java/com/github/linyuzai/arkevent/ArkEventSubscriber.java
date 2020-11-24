@@ -1,6 +1,8 @@
 package com.github.linyuzai.arkevent;
 
-public interface ArkEventSubscriber {
+import com.github.linyuzai.arkevent.support.ArkOrder;
+
+public interface ArkEventSubscriber extends ArkOrder {
 
     void onSubscribe(ArkEvent event, Object... args) throws Throwable;
 }

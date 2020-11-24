@@ -1,8 +1,10 @@
 package com.github.linyuzai.arkevent;
 
-public interface ArkEventConditionFilter {
+import com.github.linyuzai.arkevent.support.ArkOrder;
 
-    boolean filter(ArkEvent event, Object... args);
+public interface ArkEventConditionFilter extends ArkOrder {
+
+    boolean filter(ArkEventSubscriber subscriber, ArkEvent event, Object... args);
 
     interface Factory {
 

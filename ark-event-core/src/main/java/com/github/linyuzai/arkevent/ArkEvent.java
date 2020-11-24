@@ -1,12 +1,10 @@
 package com.github.linyuzai.arkevent;
 
-import com.github.linyuzai.arkevent.plugin.ArkEventPlugin;
-
-import java.util.*;
+import com.github.linyuzai.arkevent.support.ArkHolder;
 
 public interface ArkEvent {
 
     default void publish(Object... args) {
-        ArkEventPlugin.getDispatcher().dispatch(this, args);
+        ArkHolder.getDispatcher().dispatch(this, args);
     }
 }
