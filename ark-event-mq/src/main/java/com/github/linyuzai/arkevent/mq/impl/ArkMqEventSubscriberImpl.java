@@ -4,15 +4,15 @@ import com.github.linyuzai.arkevent.ArkEvent;
 import com.github.linyuzai.arkevent.ArkEventSubscriber;
 import com.github.linyuzai.arkevent.mq.ArkMqEventEncoder;
 import com.github.linyuzai.arkevent.mq.ArkMqEventSender;
-import com.github.linyuzai.arkevent.mq.ArkMqEventSubscriber;
+import com.github.linyuzai.arkevent.mq.ArkMqEventSubscriberMask;
 
-public class DefaultArkMqEventSubscriber implements ArkEventSubscriber, ArkMqEventSubscriber {
+public class ArkMqEventSubscriberImpl implements ArkEventSubscriber, ArkMqEventSubscriberMask {
 
     private ArkMqEventEncoder encoder;
 
     private ArkMqEventSender sender;
 
-    public DefaultArkMqEventSubscriber(ArkMqEventEncoder encoder, ArkMqEventSender sender) {
+    public ArkMqEventSubscriberImpl(ArkMqEventEncoder encoder, ArkMqEventSender sender) {
         this.encoder = encoder;
         this.sender = sender;
     }

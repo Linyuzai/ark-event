@@ -3,8 +3,8 @@ package com.github.linyuzai.arkevent.mq.condition.type;
 import com.github.linyuzai.arkevent.ArkEvent;
 import com.github.linyuzai.arkevent.ArkEventConditionFilter;
 import com.github.linyuzai.arkevent.ArkEventSubscriber;
-import com.github.linyuzai.arkevent.mq.ArkMqEvent;
-import com.github.linyuzai.arkevent.mq.OnArkMqEvent;
+import com.github.linyuzai.arkevent.mq.condition.ArkMqEvent;
+import com.github.linyuzai.arkevent.mq.condition.OnArkMqEvent;
 
 public class ArkMqEventConditionFilter implements ArkEventConditionFilter {
 

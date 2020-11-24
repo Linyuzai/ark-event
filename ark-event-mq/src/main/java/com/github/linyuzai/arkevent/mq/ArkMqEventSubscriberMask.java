@@ -1,5 +1,5 @@
 package com.github.linyuzai.arkevent.mq;
 
-public interface ArkMqEventSubscriber {
+public interface ArkMqEventSubscriberMask {
 
 }

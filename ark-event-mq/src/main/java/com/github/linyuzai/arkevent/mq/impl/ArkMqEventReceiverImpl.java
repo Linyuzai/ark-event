@@ -4,11 +4,11 @@ import com.github.linyuzai.arkevent.mq.ArkMqEventDecoder;
 import com.github.linyuzai.arkevent.mq.ArkMqEventReceiver;
 import com.github.linyuzai.arkevent.mq.condition.ArkEventFromMq;
 
-public class DefaultArkMqEventReceiver implements ArkMqEventReceiver {
+public class ArkMqEventReceiverImpl implements ArkMqEventReceiver {
 
     private ArkMqEventDecoder decoder;
 
-    public DefaultArkMqEventReceiver(ArkMqEventDecoder decoder) {
+    public ArkMqEventReceiverImpl(ArkMqEventDecoder decoder) {
         this.decoder = decoder;
     }
 

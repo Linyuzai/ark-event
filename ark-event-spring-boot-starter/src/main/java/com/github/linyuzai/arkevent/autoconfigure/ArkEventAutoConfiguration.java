@@ -1,11 +1,13 @@
 package com.github.linyuzai.arkevent.autoconfigure;
 
 import com.github.linyuzai.arkevent.*;
+import com.github.linyuzai.arkevent.autoconfigure.handler.exception.slf4j.Slf4jArkEventExceptionHandlerAdapter;
 import com.github.linyuzai.arkevent.impl.ArkEventDispatcherImpl;
 import com.github.linyuzai.arkevent.support.ArkHolder;
 import com.github.linyuzai.arkevent.support.filter.condition.group.GroupArkEventConditionFilterFactory;
 import com.github.linyuzai.arkevent.support.filter.condition.type.TypeArkEventConditionFilterFactory;
 import com.github.linyuzai.arkevent.support.handler.exception.rethrow.RethrowArkExceptionHandlerAdapter;
+import com.github.linyuzai.arkevent.support.sorter.publish.AsyncArkEventPublishSorter;
 import com.github.linyuzai.arkevent.support.strategy.publish.async.AsyncArkPublishStrategyAdapter;
 import com.github.linyuzai.arkevent.support.strategy.publish.direct.DirectArkPublishStrategyAdapter;
 import org.springframework.context.annotation.Bean;
@@ -37,6 +39,16 @@ public class ArkEventAutoConfiguration {
     @Bean
     public RethrowArkExceptionHandlerAdapter rethrowArkEventExceptionHandlerAdapter() {
         return new RethrowArkExceptionHandlerAdapter();
+    }
+
+    @Bean
+    public Slf4jArkEventExceptionHandlerAdapter slf4jArkEventExceptionHandlerAdapter() {
+        return new Slf4jArkEventExceptionHandlerAdapter();
+    }
+
+    @Bean
+    public AsyncArkEventPublishSorter asyncArkEventPublishSorter() {
+        return new AsyncArkEventPublishSorter();
     }
 
     @Bean

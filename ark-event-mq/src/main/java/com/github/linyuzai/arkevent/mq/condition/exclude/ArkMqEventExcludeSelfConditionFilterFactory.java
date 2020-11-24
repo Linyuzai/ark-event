@@ -2,7 +2,7 @@ package com.github.linyuzai.arkevent.mq.condition.exclude;
 
 import com.github.linyuzai.arkevent.ArkEventConditionFilter;
 import com.github.linyuzai.arkevent.ArkEventSubscriber;
-import com.github.linyuzai.arkevent.mq.ArkMqEventSubscriber;
+import com.github.linyuzai.arkevent.mq.ArkMqEventSubscriberMask;
 
 public class ArkMqEventExcludeSelfConditionFilterFactory implements ArkEventConditionFilter.Factory {
 
@@ -10,7 +10,7 @@ public class ArkMqEventExcludeSelfConditionFilterFactory implements ArkEventCond
 
     @Override
     public ArkEventConditionFilter getConditionFilter(ArkEventSubscriber arkEventSubscriber) {
-        if (arkEventSubscriber instanceof ArkMqEventSubscriber) {
+        if (arkEventSubscriber instanceof ArkMqEventSubscriberMask) {
             return filter;
         }
         return null;
