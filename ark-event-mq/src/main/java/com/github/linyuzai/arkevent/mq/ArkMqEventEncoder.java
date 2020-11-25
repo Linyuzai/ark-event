@@ -1,8 +1,7 @@
 package com.github.linyuzai.arkevent.mq;
 
-import com.github.linyuzai.arkevent.ArkEvent;
+import com.github.linyuzai.arkevent.ArkEventEncoder;
 
-public interface ArkMqEventEncoder {
+public interface ArkMqEventEncoder extends ArkEventEncoder<String> {
 
-    String encode(ArkEvent event) throws Throwable;
 }

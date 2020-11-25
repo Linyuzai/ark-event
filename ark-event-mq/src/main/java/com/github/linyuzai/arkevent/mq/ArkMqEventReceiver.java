@@ -1,6 +1,7 @@
 package com.github.linyuzai.arkevent.mq;
 
-public interface ArkMqEventReceiver {
+import com.github.linyuzai.arkevent.ArkEventReceiver;
 
-    void receive(String event) throws Throwable;
+public interface ArkMqEventReceiver extends ArkEventReceiver<String> {
+
 }

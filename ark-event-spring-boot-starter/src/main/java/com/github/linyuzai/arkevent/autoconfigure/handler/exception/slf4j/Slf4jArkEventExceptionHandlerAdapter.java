@@ -22,4 +22,9 @@ public class Slf4jArkEventExceptionHandlerAdapter implements ArkEventExceptionHa
         }
         return null;
     }
+
+    @Override
+    public int order() {
+        return EXCEPTION_HANDLER_ADAPTER_LOGGER;
+    }
 }

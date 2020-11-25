@@ -23,4 +23,9 @@ public class AsyncArkPublishStrategyAdapter implements ArkEventPublishStrategy.A
         }
         return null;
     }
+
+    @Override
+    public int order() {
+        return PUBLISH_STRATEGY_ADAPTER_ASYNC;
+    }
 }

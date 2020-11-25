@@ -1,4 +1,4 @@
-package com.github.linyuzai.arkevent.mq.condition.exclude;
+package com.github.linyuzai.arkevent.support.filter.condition.remote;
 
 import com.github.linyuzai.arkevent.ArkEvent;
 import com.github.linyuzai.arkevent.ArkEventConditionFilter;
@@ -7,7 +7,7 @@ import com.github.linyuzai.arkevent.ArkEventSubscriber;
 
 import java.util.Arrays;
 
-public class ArkMqExcludeSelfEventConditionFilter implements ArkEventConditionFilter {
+public class RemoteArkEventConditionFilter implements ArkEventConditionFilter {
 
     @Override
     public boolean filter(ArkEventSubscriber subscriber, ArkEvent arkEvent, Object... args) {

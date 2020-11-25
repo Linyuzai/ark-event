@@ -1,6 +1,7 @@
 package com.github.linyuzai.arkevent.mq;
 
-public interface ArkMqEventSender {
+import com.github.linyuzai.arkevent.ArkEventSender;
 
-    void send(String event) throws Throwable;
+public interface ArkMqEventSender extends ArkEventSender<String> {
+
 }

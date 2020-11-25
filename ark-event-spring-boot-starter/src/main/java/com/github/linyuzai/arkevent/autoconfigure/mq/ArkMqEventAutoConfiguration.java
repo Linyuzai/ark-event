@@ -1,147 +1,201 @@
 package com.github.linyuzai.arkevent.autoconfigure.mq;
 
+import com.github.linyuzai.arkevent.ArkEventModuleIdProvider;
+import com.github.linyuzai.arkevent.ArkEventModulesProvider;
 import com.github.linyuzai.arkevent.autoconfigure.mq.decoder.JacksonMqEventDecoder;
 import com.github.linyuzai.arkevent.autoconfigure.mq.encoder.JacksonMqEventEncoder;
 import com.github.linyuzai.arkevent.mq.ArkMqEventDecoder;
 import com.github.linyuzai.arkevent.mq.ArkMqEventEncoder;
 import com.github.linyuzai.arkevent.mq.ArkMqEventReceiver;
 import com.github.linyuzai.arkevent.mq.ArkMqEventSender;
-import com.github.linyuzai.arkevent.mq.condition.exclude.ArkMqEventExcludeSelfConditionFilterFactory;
 import com.github.linyuzai.arkevent.mq.condition.type.ArkMqEventConditionFilterFactory;
 import com.github.linyuzai.arkevent.mq.impl.ArkMqEventReceiverImpl;
 import com.github.linyuzai.arkevent.mq.impl.ArkMqEventSubscriberImpl;
-import com.github.linyuzai.arkevent.mq.rabbit.RabbitArkMqEventMessageListenerContainer;
-import com.github.linyuzai.arkevent.mq.rabbit.RabbitArkMqEventSender;
-import com.github.linyuzai.arkevent.mq.rabbit.RabbitArkMqEventMessageListener;
+import com.github.linyuzai.arkevent.mq.publish.MqArkPublishStrategyAdapter;
+import com.github.linyuzai.arkevent.mq.rabbit.*;
+import com.github.linyuzai.arkevent.mq.rabbit.impl.ApplicationNameArkEventModuleIdProvider;
+import com.github.linyuzai.arkevent.mq.rabbit.impl.DefaultRabbitArkMqEventRoutingKeyProvider;
 import com.github.linyuzai.arkevent.mq.rabbit.transaction.ArkMqEventTransaction;
+import com.github.linyuzai.arkevent.mq.rabbit.transaction.RabbitArkMqEventTransactionMessageListenerContainer;
+import com.github.linyuzai.arkevent.mq.sorter.MqArkEventPublishSorter;
+import com.github.linyuzai.arkevent.support.filter.condition.remote.RemoteArkEventConditionFilterFactory;
+import org.springframework.amqp.core.BindingBuilder;
+import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
+import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
 import org.springframework.amqp.rabbit.transaction.RabbitTransactionManager;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
+@ConditionalOnClass(name = "com.github.linyuzai.arkevent.mq.ArkMqEventMask")
 public class ArkMqEventAutoConfiguration {
-
-    @Value("${spring.application.name}")
-    private String applicationName;
-
-    @Value("${ark-event.mq.queue-prefix:Queue@ArkEvent.}")
-    private String queuePrefix;
 
     @Bean
     @ConditionalOnMissingBean(JacksonMqEventEncoder.class)
-    @ConditionalOnClass(name = "com.github.linyuzai.arkevent.mq.condition.ArkMqEvent")
     public JacksonMqEventEncoder jacksonMqEventEncoder() {
         return new JacksonMqEventEncoder();
     }
 
     @Bean
     @ConditionalOnMissingBean(JacksonMqEventDecoder.class)
-    @ConditionalOnClass(name = "com.github.linyuzai.arkevent.mq.condition.ArkMqEvent")
     public JacksonMqEventDecoder jacksonMqEventDecoder() {
         return new JacksonMqEventDecoder();
     }
 
     @Bean
-    @ConditionalOnClass(name = "com.github.linyuzai.arkevent.mq.condition.ArkMqEvent")
     public ArkMqEventConditionFilterFactory arkMqEventConditionFilterFactory() {
         return new ArkMqEventConditionFilterFactory();
     }
 
     @Bean
-    @ConditionalOnClass(name = "com.github.linyuzai.arkevent.mq.condition.ArkMqEvent")
-    public ArkMqEventExcludeSelfConditionFilterFactory arkMqEventExcludeSelfConditionFilterFactory() {
-        return new ArkMqEventExcludeSelfConditionFilterFactory();
+    public RemoteArkEventConditionFilterFactory remoteArkEventConditionFilterFactory() {
+        return new RemoteArkEventConditionFilterFactory();
     }
 
     @Bean
-    @ConditionalOnClass(name = "com.github.linyuzai.arkevent.mq.condition.ArkMqEvent")
+    public MqArkPublishStrategyAdapter mqArkPublishStrategyAdapter() {
+        return new MqArkPublishStrategyAdapter();
+    }
+
+    @Bean
+    public MqArkEventPublishSorter mqArkEventPublishSorter() {
+        return new MqArkEventPublishSorter();
+    }
+
+    @Bean
     public ArkMqEventSubscriberImpl arkMqEventSubscriber(ArkMqEventEncoder encoder, ArkMqEventSender sender) {
         return new ArkMqEventSubscriberImpl(encoder, sender);
     }
 
     @Bean
-    @ConditionalOnClass(name = "com.github.linyuzai.arkevent.mq.condition.ArkMqEvent")
     public ArkMqEventReceiverImpl arkMqEventReceiver(ArkMqEventDecoder decoder) {
         return new ArkMqEventReceiverImpl(decoder);
     }
 
-    @Bean
-    @ConditionalOnMissingBean(ArkMqEventSender.class)
-    @ConditionalOnClass(name = "com.github.linyuzai.arkevent.mq.rabbit.RabbitArkMqEventSender")
-    public RabbitArkMqEventSender rabbitArkMqEventSender(RabbitTemplate rabbitTemplate) {
-        return new RabbitArkMqEventSender(rabbitTemplate);
-    }
+    @Configuration
+    @ConditionalOnClass(name = "com.github.linyuzai.arkevent.mq.rabbit.RabbitArkMqEventMask")
+    protected static class RabbitArkMqEventAutoConfiguration {
 
-    @Bean
-    @ConditionalOnMissingBean(RabbitArkMqEventMessageListener.class)
-    @ConditionalOnClass(name = "com.github.linyuzai.arkevent.mq.rabbit.RabbitArkMqEventMessageListener")
-    public RabbitArkMqEventMessageListener rabbitArkEventMessageListener(ArkMqEventReceiver receiver) {
-        return new RabbitArkMqEventMessageListener(receiver);
-    }
+        @Value("${ark-event.mq.queue-prefix:Queue@ArkEvent.}")
+        private String queuePrefix;
 
-    @Bean
-    @ConditionalOnMissingBean(ArkMqEventTransaction.class)
-    @ConditionalOnClass(name = "com.github.linyuzai.arkevent.mq.rabbit.RabbitArkMqEventMessageListener")
-    public RabbitArkMqEventMessageListenerContainer rabbitArkEventMessageListenerContainer(
-            RabbitArkMqEventMessageListener listener,
-            ConnectionFactory connectionFactory) {
-        /*Queue queue = enerMQ.admin().declareQueue();
-        if (queue == null) {
-            throw new RuntimeException("Declare queue failure");
-        }*/
+        @Bean
+        @ConditionalOnMissingBean(ConnectionFactory.class)
+        @ConfigurationProperties(prefix = "ark-event.mq")
+        public ConnectionFactory rabbitArkMqEventConnectionFactory() {
+            return new CachingConnectionFactory();
+        }
 
-        /*Exchange exchange = eventBusExchange();
-        enerMQ.admin().declareExchange(exchange);
+        @Bean
+        @ConditionalOnMissingBean(RabbitArkMqEventTopicExchange.class)
+        public RabbitArkMqEventTopicExchange rabbitArkMqEventTopicExchange() {
+            return new RabbitArkMqEventTopicExchange("");
+        }
 
-        Binding binding = BindingBuilder.bind(eventBusQueue).to(exchange).with("event-bus.#").noargs();
-        enerMQ.admin().declareBinding(binding);*/
+        @Bean
+        @ConditionalOnMissingBean(ArkEventModuleIdProvider.class)
+        public ApplicationNameArkEventModuleIdProvider applicationNameArkEventModuleIdProvider() {
+            return new ApplicationNameArkEventModuleIdProvider();
+        }
 
-        RabbitArkMqEventMessageListenerContainer container = new RabbitArkMqEventMessageListenerContainer();
-        container.setConnectionFactory(connectionFactory);
-        container.setQueueNames(getQueueName());
-        container.setMessageListener(listener);
-        return container;
-    }
+        @Bean
+        @ConditionalOnMissingBean(RabbitArkMqEventQueue.class)
+        public RabbitArkMqEventQueue rabbitArkMqEventQueue(ArkEventModuleIdProvider idProvider) {
+            return new RabbitArkMqEventQueue(queuePrefix + idProvider.getModuleId().toUpperCase());
+        }
 
-    @Bean
-    @ConditionalOnBean(ArkMqEventTransaction.class)
-    @ConditionalOnClass(name = "com.github.linyuzai.arkevent.mq.rabbit.RabbitArkMqEventMessageListener")
-    public RabbitTransactionManager rabbitArkMqEventTransactionManager(ConnectionFactory connectionFactory) {
-        return new RabbitTransactionManager(connectionFactory);
-    }
+        @Bean
+        @ConditionalOnMissingBean(RabbitTemplate.class)
+        public RabbitTemplate arkMqEventRabbitTemplate(ConnectionFactory connectionFactory) {
+            return new RabbitTemplate(connectionFactory);
+        }
 
-    @Bean
-    @ConditionalOnBean(ArkMqEventTransaction.class)
-    @ConditionalOnClass(name = "com.github.linyuzai.arkevent.mq.rabbit.RabbitArkMqEventMessageListener")
-    public RabbitArkMqEventMessageListenerContainer rabbitArkMqEventTransactionMessageListenerContainer(
-            RabbitArkMqEventMessageListener listener,
-            ConnectionFactory connectionFactory,
-            RabbitTransactionManager transactionManager) {
-        /*Queue queue = enerMQ.admin().declareQueue();
-        if (queue == null) {
-            throw new RuntimeException("Declare queue failure");
-        }*/
+        @Bean
+        @ConditionalOnMissingBean(ArkMqEventSender.class)
+        public RabbitArkMqEventSender rabbitArkMqEventSender(RabbitTemplate rabbitTemplate) {
+            return new RabbitArkMqEventSender(rabbitTemplate);
+        }
 
-        /*Exchange exchange = eventBusExchange();
-        enerMQ.admin().declareExchange(exchange);
+        @Bean
+        @ConditionalOnMissingBean(RabbitArkMqEventMessageListener.class)
+        public RabbitArkMqEventMessageListener rabbitArkMqEventMessageListener(ArkMqEventReceiver receiver) {
+            return new RabbitArkMqEventMessageListener(receiver);
+        }
 
-        Binding binding = BindingBuilder.bind(eventBusQueue).to(exchange).with("event-bus.#").noargs();
-        enerMQ.admin().declareBinding(binding);*/
+        @Bean
+        @ConditionalOnMissingBean(ArkMqEventTransaction.class)
+        public RabbitArkMqEventMessageListenerContainer rabbitArkEventMessageListenerContainer(
+                RabbitArkMqEventQueue rabbitArkMqEventQueue,
+                RabbitArkMqEventMessageListener listener,
+                ConnectionFactory connectionFactory) {
 
-        RabbitArkMqEventMessageListenerContainer container = new RabbitArkMqEventMessageListenerContainer();
-        container.setConnectionFactory(connectionFactory);
-        container.setQueueNames(getQueueName());
-        container.setMessageListener(listener);
-        container.setChannelTransacted(true);
-        container.setTransactionManager(transactionManager);
-        return container;
-    }
+            RabbitArkMqEventMessageListenerContainer container = new RabbitArkMqEventMessageListenerContainer();
+            initRabbitMessageListenerContainer(rabbitArkMqEventQueue,
+                    listener, connectionFactory, container);
+            return container;
+        }
 
-    private String getQueueName() {
-        return queuePrefix + applicationName.toUpperCase();
+        @Bean
+        @ConditionalOnBean(ArkMqEventTransaction.class)
+        public RabbitTransactionManager arkMqEventRabbitTransactionManager(ConnectionFactory connectionFactory) {
+            return new RabbitTransactionManager(connectionFactory);
+        }
+
+        @Bean
+        @ConditionalOnBean(ArkMqEventTransaction.class)
+        public RabbitArkMqEventTransactionMessageListenerContainer rabbitArkMqEventTransactionMessageListenerContainer(
+                RabbitArkMqEventQueue rabbitArkMqEventQueue,
+                RabbitArkMqEventMessageListener listener,
+                ConnectionFactory connectionFactory,
+                RabbitTransactionManager transactionManager) {
+            RabbitArkMqEventTransactionMessageListenerContainer container = new RabbitArkMqEventTransactionMessageListenerContainer();
+            initRabbitMessageListenerContainer(rabbitArkMqEventQueue,
+                    listener, connectionFactory, container);
+            container.setChannelTransacted(true);
+            container.setTransactionManager(transactionManager);
+            return container;
+        }
+
+        @Bean
+        @ConditionalOnMissingBean(RabbitAdmin.class)
+        public RabbitAdmin arkEventRabbitAdmin(ConnectionFactory connectionFactory) {
+            return new RabbitAdmin(connectionFactory);
+        }
+
+        @Bean
+        @ConditionalOnMissingBean(RabbitArkMqEventRoutingKeyProvider.class)
+        public RabbitArkMqEventRoutingKeyProvider rabbitArkMqEventRoutingKeyProvider(
+                ArkEventModuleIdProvider idProvider, ArkEventModulesProvider moduleProvider) {
+            return new DefaultRabbitArkMqEventRoutingKeyProvider(idProvider, moduleProvider);
+        }
+
+        @Bean
+        public Object rabbitArkEventBinding(RabbitAdmin admin,
+                                            RabbitArkMqEventTopicExchange exchange,
+                                            RabbitArkMqEventQueue queue,
+                                            RabbitArkMqEventRoutingKeyProvider routingKeyProvider) {
+            admin.declareExchange(exchange);
+            admin.declareQueue(queue);
+            for (String routingKey : routingKeyProvider.getRoutingKeys()) {
+                admin.declareBinding(BindingBuilder.bind(queue).to(exchange).with(routingKey));
+            }
+            return new Object();
+        }
+
+        private void initRabbitMessageListenerContainer(RabbitArkMqEventQueue rabbitArkMqEventQueue,
+                                                        RabbitArkMqEventMessageListener listener,
+                                                        ConnectionFactory connectionFactory,
+                                                        SimpleMessageListenerContainer container) {
+            container.setConnectionFactory(connectionFactory);
+            container.setQueueNames(rabbitArkMqEventQueue.getName());
+            container.setMessageListener(listener);
+        }
     }
 }

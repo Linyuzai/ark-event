@@ -4,9 +4,9 @@ import com.github.linyuzai.arkevent.ArkEvent;
 import com.github.linyuzai.arkevent.ArkEventSubscriber;
 import com.github.linyuzai.arkevent.mq.ArkMqEventEncoder;
 import com.github.linyuzai.arkevent.mq.ArkMqEventSender;
-import com.github.linyuzai.arkevent.mq.ArkMqEventSubscriberMask;
+import com.github.linyuzai.arkevent.mq.condition.type.ArkMqMask;
 
-public class ArkMqEventSubscriberImpl implements ArkEventSubscriber, ArkMqEventSubscriberMask {
+public class ArkMqEventSubscriberImpl implements ArkEventSubscriber, ArkMqMask {
 
     private ArkMqEventEncoder encoder;
 
