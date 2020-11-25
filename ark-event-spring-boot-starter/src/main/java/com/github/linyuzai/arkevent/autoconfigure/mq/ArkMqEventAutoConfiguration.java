@@ -26,6 +26,7 @@ import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
 import org.springframework.amqp.rabbit.transaction.RabbitTransactionManager;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -94,12 +95,12 @@ public class ArkMqEventAutoConfiguration {
         @Value("${ark-event.mq.queue-prefix:Queue@ArkEvent.}")
         private String queuePrefix;
 
-        @Bean
+        /*@Bean
         @ConditionalOnMissingBean(ConnectionFactory.class)
         @ConfigurationProperties(prefix = "ark-event.mq")
         public ConnectionFactory rabbitArkMqEventConnectionFactory() {
             return new CachingConnectionFactory();
-        }
+        }*/
 
         @Bean
         @ConditionalOnMissingBean(RabbitArkMqEventTopicExchange.class)
@@ -119,11 +120,11 @@ public class ArkMqEventAutoConfiguration {
             return new RabbitArkMqEventQueue(queuePrefix + idProvider.getModuleId().toUpperCase());
         }
 
-        @Bean
+        /*@Bean
         @ConditionalOnMissingBean(RabbitTemplate.class)
         public RabbitTemplate arkMqEventRabbitTemplate(ConnectionFactory connectionFactory) {
             return new RabbitTemplate(connectionFactory);
-        }
+        }*/
 
         @Bean
         @ConditionalOnMissingBean(ArkMqEventSender.class)

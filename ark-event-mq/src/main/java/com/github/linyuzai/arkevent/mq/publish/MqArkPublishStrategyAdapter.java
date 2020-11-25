@@ -3,6 +3,7 @@ package com.github.linyuzai.arkevent.mq.publish;
 import com.github.linyuzai.arkevent.ArkEventPublishStrategy;
 import com.github.linyuzai.arkevent.ArkEventSubscriber;
 import com.github.linyuzai.arkevent.mq.condition.type.ArkMqMask;
+import com.github.linyuzai.arkevent.support.filter.condition.remote.RemoteArkEventSubscriberMask;
 import com.github.linyuzai.arkevent.support.strategy.publish.async.ArkEventPublishAsync;
 import com.github.linyuzai.arkevent.support.strategy.publish.async.AsyncArkEventPublishStrategy;
 import com.github.linyuzai.arkevent.support.strategy.publish.async.OnArkEventPublishAsync;
