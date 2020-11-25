@@ -27,6 +27,7 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
 import org.springframework.amqp.rabbit.transaction.RabbitTransactionManager;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -69,10 +70,6 @@ public class ArkMqEventAutoConfiguration {
         return new MqArkEventPublishSorter();
     }
 
-    @Bean
-    public ArkMqEventSubscriberImpl arkMqEventSubscriber(ArkMqEventEncoder encoder, ArkMqEventSender sender) {
-        return new ArkMqEventSubscriberImpl(encoder, sender);
-    }
 
     @Bean
     public ArkMqEventReceiverImpl arkMqEventReceiver(ArkMqEventDecoder decoder) {
@@ -80,8 +77,19 @@ public class ArkMqEventAutoConfiguration {
     }
 
     @Configuration
+    @AutoConfigureAfter(RabbitArkMqEventAutoConfiguration.class)
+    public static class FinalAutoConfiguration {
+
+        @Bean
+        public ArkMqEventSubscriberImpl arkMqEventSubscriber(ArkMqEventEncoder encoder, ArkMqEventSender sender) {
+            return new ArkMqEventSubscriberImpl(encoder, sender);
+        }
+    }
+
+    @Configuration
+    @AutoConfigureAfter(ArkMqEventAutoConfiguration.class)
     @ConditionalOnClass(name = "com.github.linyuzai.arkevent.mq.rabbit.RabbitArkMqEventMask")
-    protected static class RabbitArkMqEventAutoConfiguration {
+    public static class RabbitArkMqEventAutoConfiguration {
 
         @Value("${ark-event.mq.queue-prefix:Queue@ArkEvent.}")
         private String queuePrefix;
@@ -96,7 +104,7 @@ public class ArkMqEventAutoConfiguration {
         @Bean
         @ConditionalOnMissingBean(RabbitArkMqEventTopicExchange.class)
         public RabbitArkMqEventTopicExchange rabbitArkMqEventTopicExchange() {
-            return new RabbitArkMqEventTopicExchange("");
+            return new RabbitArkMqEventTopicExchange("Exchange@ArkEvent.Topic");
         }
 
         @Bean
@@ -119,8 +127,9 @@ public class ArkMqEventAutoConfiguration {
 
         @Bean
         @ConditionalOnMissingBean(ArkMqEventSender.class)
-        public RabbitArkMqEventSender rabbitArkMqEventSender(RabbitTemplate rabbitTemplate) {
-            return new RabbitArkMqEventSender(rabbitTemplate);
+        public RabbitArkMqEventSender rabbitArkMqEventSender(RabbitTemplate template, RabbitArkMqEventTopicExchange exchange,
+                                                             RabbitArkMqEventRoutingKeyProvider routingKeyProvider) {
+            return new RabbitArkMqEventSender(template, exchange, routingKeyProvider);
         }
 
         @Bean

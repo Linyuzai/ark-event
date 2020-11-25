@@ -8,15 +8,22 @@ public class RabbitArkMqEventSender implements ArkMqEventSender {
 
     private RabbitTemplate template;
 
-    public RabbitArkMqEventSender(RabbitTemplate template) {
+    private RabbitArkMqEventTopicExchange exchange;
+
+    private RabbitArkMqEventRoutingKeyProvider routingKeyProvider;
+
+    public RabbitArkMqEventSender(RabbitTemplate template, RabbitArkMqEventTopicExchange exchange,
+                                  RabbitArkMqEventRoutingKeyProvider routingKeyProvider) {
         if (template == null) {
             throw new ArkEventException("RabbitTemplate is null");
         }
         this.template = template;
+        this.exchange = exchange;
+        this.routingKeyProvider = routingKeyProvider;
     }
 
     @Override
     public void send(String event) {
-        template.convertAndSend("", "", event);
+        template.convertAndSend(exchange.getName(), routingKeyProvider.getRoutingKey(), event);
     }
 }

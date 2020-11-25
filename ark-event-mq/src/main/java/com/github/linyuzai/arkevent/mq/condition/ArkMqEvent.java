@@ -1,4 +1,6 @@
 package com.github.linyuzai.arkevent.mq.condition;
 
-public interface ArkMqEvent {
+import com.github.linyuzai.arkevent.ArkEvent;
+
+public interface ArkMqEvent extends ArkEvent {
 }

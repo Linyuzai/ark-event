@@ -1,10 +1,10 @@
-package com.github.linyuzai.arkevent.mq.condition;
+package com.github.linyuzai.arkevent.mq.condition.annotation;
 
 import java.lang.annotation.*;
 
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
-public @interface OnArkMqEvent {
+public @interface ArkMqEvent {
 
 }

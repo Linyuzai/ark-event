@@ -18,7 +18,8 @@ public class RabbitArkMqEventMessageListener implements MessageListener {
         try {
             receiver.receive(new String(message.getBody()));
         } catch (Throwable e) {
-            throw new ArkEventException(e);
+            //throw new ArkEventException(e);
+            e.printStackTrace();
         }
     }
 }
