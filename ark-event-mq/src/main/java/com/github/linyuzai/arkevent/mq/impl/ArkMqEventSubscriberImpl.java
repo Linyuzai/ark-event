@@ -5,9 +5,8 @@ import com.github.linyuzai.arkevent.ArkEventSubscriber;
 import com.github.linyuzai.arkevent.mq.ArkMqEventEncoder;
 import com.github.linyuzai.arkevent.mq.ArkMqEventSender;
 import com.github.linyuzai.arkevent.mq.support.filter.condition.type.MqArkEventSubscriberMask;
-import com.github.linyuzai.arkevent.support.filter.condition.remote.RemoteArkEventSubscriberMask;
 
-public class ArkMqEventSubscriberImpl implements ArkEventSubscriber, MqArkEventSubscriberMask, RemoteArkEventSubscriberMask {
+public class ArkMqEventSubscriberImpl implements ArkEventSubscriber, MqArkEventSubscriberMask {
 
     private ArkMqEventEncoder encoder;
 

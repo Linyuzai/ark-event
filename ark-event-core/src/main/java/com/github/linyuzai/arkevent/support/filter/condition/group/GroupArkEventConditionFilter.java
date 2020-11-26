@@ -3,10 +3,6 @@ package com.github.linyuzai.arkevent.support.filter.condition.group;
 import com.github.linyuzai.arkevent.ArkEvent;
 import com.github.linyuzai.arkevent.ArkEventConditionFilter;
 import com.github.linyuzai.arkevent.ArkEventSubscriber;
-import com.github.linyuzai.arkevent.support.filter.condition.group.exclude.ArkEventGroupExclude;
-import com.github.linyuzai.arkevent.support.filter.condition.group.exclude.OnArkEventGroupExclude;
-import com.github.linyuzai.arkevent.support.filter.condition.group.include.ArkEventGroupInclude;
-import com.github.linyuzai.arkevent.support.filter.condition.group.include.OnArkEventGroupInclude;
 
 public class GroupArkEventConditionFilter implements ArkEventConditionFilter {
 
@@ -21,40 +17,11 @@ public class GroupArkEventConditionFilter implements ArkEventConditionFilter {
 
     @Override
     public boolean filter(ArkEventSubscriber subscriber, ArkEvent event, Object... args) {
-        boolean hasInclude = false;
-        boolean hasExclude = false;
-        String[] includes = null;
-        String[] excludes = null;
-        if (event instanceof ArkEventGroupInclude) {
-            hasInclude = true;
-            ArkEventGroupInclude arkEventGroupInclude = (ArkEventGroupInclude) event;
-            includes = arkEventGroupInclude.arkEventIncludeGroups();
-        } else {
-            OnArkEventGroupInclude onArkEventGroupInclude = event.getClass().getAnnotation(OnArkEventGroupInclude.class);
-            if (onArkEventGroupInclude != null) {
-                hasInclude = true;
-                includes = onArkEventGroupInclude.value();
-            }
-        }
-        if (event instanceof ArkEventGroupExclude) {
-            hasExclude = true;
-            ArkEventGroupExclude arkEventGroupExclude = (ArkEventGroupExclude) event;
-            excludes = arkEventGroupExclude.arkEventExcludeGroups();
-        } else {
-            OnArkEventGroupExclude onArkEventGroupExclude = event.getClass().getAnnotation(OnArkEventGroupExclude.class);
-            if (onArkEventGroupExclude != null) {
-                hasExclude = true;
-                excludes = onArkEventGroupExclude.value();
-            }
-        }
-        if (hasInclude && hasExclude) {
-            return include(includes) && exclude(excludes);
-        } else if (hasInclude) {
-            return include(includes);
-        } else if (hasExclude) {
-            return exclude(excludes);
-        } else {
+        EventGroup eventGroup = event.getClass().getAnnotation(EventGroup.class);
+        if (eventGroup == null) {
             return !requireGroupCondition;
+        } else {
+            return include(eventGroup.value());
         }
     }
 
@@ -70,19 +37,5 @@ public class GroupArkEventConditionFilter implements ArkEventConditionFilter {
             }
         }
         return false;
-    }
-
-    private boolean exclude(String[] targets) {
-        if (targets == null) {
-            return true;
-        }
-        for (String target : targets) {
-            for (String group : groups) {
-                if (target.equals(group)) {
-                    return false;
-                }
-            }
-        }
-        return true;
     }
 }

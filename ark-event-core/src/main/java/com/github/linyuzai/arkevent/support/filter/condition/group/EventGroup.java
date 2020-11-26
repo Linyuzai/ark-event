@@ -1,11 +1,11 @@
-package com.github.linyuzai.arkevent.support.filter.condition.group.include;
+package com.github.linyuzai.arkevent.support.filter.condition.group;
 
 import java.lang.annotation.*;
 
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
-public @interface OnArkEventGroupInclude {
+public @interface EventGroup {
 
     String[] value();
 }

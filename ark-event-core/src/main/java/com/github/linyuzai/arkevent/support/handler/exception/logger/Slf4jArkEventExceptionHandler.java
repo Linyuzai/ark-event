@@ -1,4 +1,4 @@
-package com.github.linyuzai.arkevent.autoconfigure.handler.exception.slf4j;
+package com.github.linyuzai.arkevent.support.handler.exception.logger;
 
 import com.github.linyuzai.arkevent.ArkEventExceptionHandler;
 import com.github.linyuzai.arkevent.exception.ArkEventException;

@@ -7,16 +7,10 @@ public class GroupArkEventConditionFilterFactory implements ArkEventConditionFil
 
     @Override
     public ArkEventConditionFilter getConditionFilter(ArkEventSubscriber subscriber) {
-        if (subscriber instanceof ArkEventGroup) {
-            ArkEventGroup arkEventGroup = (ArkEventGroup) subscriber;
-            String[] groups = arkEventGroup.arkEventGroups();
-            boolean requireGroupCondition = arkEventGroup.requireGroupCondition();
-            return new GroupArkEventConditionFilter(groups, requireGroupCondition);
-        }
-        OnArkEventGroup onArkEventGroup = subscriber.getClass().getAnnotation(OnArkEventGroup.class);
-        if (onArkEventGroup != null) {
-            String[] groups = onArkEventGroup.value();
-            boolean requireGroupCondition = onArkEventGroup.requireGroupCondition();
+        OnEventGroup onEventGroup = subscriber.getClass().getAnnotation(OnEventGroup.class);
+        if (onEventGroup != null) {
+            String[] groups = onEventGroup.value();
+            boolean requireGroupCondition = onEventGroup.requireGroupCondition();
             return new GroupArkEventConditionFilter(groups, requireGroupCondition);
         }
         return null;

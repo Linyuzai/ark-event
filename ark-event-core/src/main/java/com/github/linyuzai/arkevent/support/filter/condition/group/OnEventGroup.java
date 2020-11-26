@@ -5,7 +5,7 @@ import java.lang.annotation.*;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
-public @interface OnArkEventGroup {
+public @interface OnEventGroup {
 
     String[] value();
 

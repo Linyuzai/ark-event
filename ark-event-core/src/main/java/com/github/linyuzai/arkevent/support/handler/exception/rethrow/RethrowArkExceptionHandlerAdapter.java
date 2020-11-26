@@ -9,6 +9,14 @@ public class RethrowArkExceptionHandlerAdapter implements ArkEventExceptionHandl
 
     @Override
     public ArkEventExceptionHandler adapt(ArkEventSubscriber subscriber) {
-        return handler;
+        if (subscriber.getClass().isAnnotationPresent(RethrowEventException.class)) {
+            return handler;
+        }
+        return null;
+    }
+
+    @Override
+    public int order() {
+        return EXCEPTION_HANDLER_ADAPTER_RETHROW;
     }
 }

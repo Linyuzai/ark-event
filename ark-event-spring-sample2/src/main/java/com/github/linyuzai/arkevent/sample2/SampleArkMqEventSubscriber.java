@@ -3,11 +3,11 @@ package com.github.linyuzai.arkevent.sample2;
 import com.github.linyuzai.arkevent.ArkEvent;
 import com.github.linyuzai.arkevent.ArkEventSubscriber;
 import com.github.linyuzai.arkevent.samplevent.SampleArkMqEvent;
-import com.github.linyuzai.arkevent.support.filter.condition.type.OnArkEventType;
+import com.github.linyuzai.arkevent.support.filter.condition.type.OnEventType;
 import org.springframework.stereotype.Component;
 
 @Component
-@OnArkEventType(SampleArkMqEvent.class)
+@OnEventType(SampleArkMqEvent.class)
 public class SampleArkMqEventSubscriber implements ArkEventSubscriber {
 
     @Override

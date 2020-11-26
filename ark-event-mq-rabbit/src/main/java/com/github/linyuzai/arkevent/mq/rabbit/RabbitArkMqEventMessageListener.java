@@ -1,6 +1,5 @@
 package com.github.linyuzai.arkevent.mq.rabbit;
 
-import com.github.linyuzai.arkevent.exception.ArkEventException;
 import com.github.linyuzai.arkevent.mq.ArkMqEventReceiver;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessageListener;

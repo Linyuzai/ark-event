@@ -17,8 +17,7 @@ public class AsyncArkPublishStrategyAdapter implements ArkEventPublishStrategy.A
 
     @Override
     public ArkEventPublishStrategy adapt(ArkEventSubscriber subscriber) {
-        if (subscriber instanceof ArkEventPublishAsync ||
-                subscriber.getClass().isAnnotationPresent(OnArkEventPublishAsync.class)) {
+        if (subscriber.getClass().isAnnotationPresent(AsyncEventPublish.class)) {
             return asyncArkEventPublishStrategy;
         }
         return null;
