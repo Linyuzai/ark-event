@@ -45,7 +45,7 @@ public class ArkEventAutoConfiguration {
         dispatcher.addConditionFilterFactory(conditionFilterFactories);
         dispatcher.addPublishStrategyAdapter(publishStrategyAdapters);
         dispatcher.addExceptionHandlerAdapter(exceptionHandlerAdapters);
-        dispatcher.registerEventSubscriber(subscribers);
+        dispatcher.registerSubscriber(subscribers);
         ArkHolder.setDispatcher(dispatcher);
         return dispatcher;
     }

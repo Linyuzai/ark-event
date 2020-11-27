@@ -15,6 +15,7 @@ public class RabbitArkMqEventMessageListener implements MessageListener {
     @Override
     public void onMessage(Message message) {
         try {
+            //message.getMessageProperties().getCorrelationId()
             receiver.receive(new String(message.getBody()));
         } catch (Throwable e) {
             //throw new ArkEventException(e);

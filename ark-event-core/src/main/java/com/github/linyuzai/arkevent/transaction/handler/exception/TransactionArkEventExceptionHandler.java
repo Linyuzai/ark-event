@@ -5,27 +5,26 @@ import com.github.linyuzai.arkevent.ArkEventException;
 import com.github.linyuzai.arkevent.transaction.ArkEventTransactionManager;
 import com.github.linyuzai.arkevent.basic.impl.handler.exception.logger.Slf4jArkEventExceptionHandler;
 
-public class TransactionArkEventExceptionHandler implements ArkEventExceptionHandler {
-
-    private ArkEventTransactionManager transactionManager;
+public abstract class TransactionArkEventExceptionHandler implements ArkEventExceptionHandler {
 
     private ArkEventExceptionHandler loggerHandler;
 
-    public TransactionArkEventExceptionHandler(ArkEventTransactionManager transactionManager) {
-        this(transactionManager, new Slf4jArkEventExceptionHandler());
+    public TransactionArkEventExceptionHandler() {
+        this(new Slf4jArkEventExceptionHandler());
     }
 
-    public TransactionArkEventExceptionHandler(ArkEventTransactionManager transactionManager, ArkEventExceptionHandler loggerHandler) {
-        this.transactionManager = transactionManager;
+    public TransactionArkEventExceptionHandler(ArkEventExceptionHandler loggerHandler) {
         this.loggerHandler = loggerHandler;
     }
 
     @Override
     public void handle(ArkEventException ex) {
-        if (transactionManager.isInTransaction()) {
-            throw ex;
-        } else {
+        try {
+            handleTransactionException(ex);
+        } catch (Throwable e) {
             loggerHandler.handle(ex);
         }
     }
+
+    public abstract void handleTransactionException(ArkEventException ex) throws Throwable;
 }

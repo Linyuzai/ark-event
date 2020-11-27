@@ -3,14 +3,15 @@ package com.github.linyuzai.arkevent.transaction.strategy.publish;
 import com.github.linyuzai.arkevent.basic.ArkEventPublishStrategy;
 import com.github.linyuzai.arkevent.basic.ArkEventSubscriber;
 import com.github.linyuzai.arkevent.transaction.ArkEventTransaction;
+import com.github.linyuzai.arkevent.transaction.ArkEventTransactionManager;
 import com.github.linyuzai.arkevent.transaction.ArkEventTransactionSubscriber;
 
 public class TransactionArkEventPublishStrategyAdapter implements ArkEventPublishStrategy.Adapter {
 
     private TransactionArkEventPublishStrategy transactionArkEventPublishStrategy;
 
-    public TransactionArkEventPublishStrategyAdapter() {
-        this(new TransactionArkEventPublishStrategy());
+    public TransactionArkEventPublishStrategyAdapter(ArkEventTransactionManager transactionManager) {
+        this(new TransactionArkEventPublishStrategy(transactionManager));
     }
 
     public TransactionArkEventPublishStrategyAdapter(TransactionArkEventPublishStrategy transactionArkEventPublishStrategy) {

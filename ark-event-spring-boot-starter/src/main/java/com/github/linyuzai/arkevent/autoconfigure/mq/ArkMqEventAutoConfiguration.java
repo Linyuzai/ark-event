@@ -142,7 +142,7 @@ public class ArkMqEventAutoConfiguration {
                 RabbitArkMqEventQueue rabbitArkMqEventQueue,
                 RabbitArkMqEventMessageListener listener,
                 ConnectionFactory connectionFactory) {
-
+            //connectionFactory.createConnection().createChannel(false).confirmSelect();
             RabbitArkMqEventMessageListenerContainer container = new RabbitArkMqEventMessageListenerContainer();
             initRabbitMessageListenerContainer(rabbitArkMqEventQueue,
                     listener, connectionFactory, container);
