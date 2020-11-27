@@ -26,6 +26,8 @@ public class ArkEventDispatcherImpl implements ArkEventDispatcher {
 
     private List<ArkEventPublishSorter> publishSorters = new CopyOnWriteArrayList<>();
 
+    private List<ArkEventPublishTracker> publishTrackers = new CopyOnWriteArrayList<>();
+
     public synchronized void registerSubscriber(Collection<? extends ArkEventSubscriber> subscribers) {
         for (ArkEventSubscriber subscriber : subscribers) {
             if (subscriber == null) {
@@ -208,14 +210,40 @@ public class ArkEventDispatcherImpl implements ArkEventDispatcher {
         return publishSorters;
     }
 
+    public void addPublishTracker(ArkEventPublishTracker tracker) {
+        if (tracker == null) {
+            throw new ArkEventException("ArkEventPublishTracker is null");
+        }
+        this.publishTrackers.add(tracker);
+    }
+
+    public List<ArkEventPublishTracker> getPublishTrackers() {
+        return publishTrackers;
+    }
+
     @Override
     public void dispatch(ArkEvent event, Object... args) {
+        for (ArkEventPublishTracker publishTracker : publishTrackers) {
+            publishTracker.onPublishStarted(event, args);
+        }
+
         List<ArkEventSubscriber> filterSubscribers = new ArrayList<>();
         for (ArkEventSubscriber subscriber : subscribers) {
             List<ArkEventConditionFilter> filters = subscriberConditionFilterMap.getOrDefault(subscriber, Collections.emptyList());
             if (filterSubscriber(filters, subscriber, event, args)) {
                 filterSubscribers.add(subscriber);
+                for (ArkEventPublishTracker publishTracker : publishTrackers) {
+                    publishTracker.onEachSubscriberConditionsFiltered(true, subscriber, filters, event, args);
+                }
+            } else {
+                for (ArkEventPublishTracker publishTracker : publishTrackers) {
+                    publishTracker.onEachSubscriberConditionsFiltered(false, subscriber, filters, event, args);
+                }
             }
+        }
+
+        for (ArkEventPublishTracker publishTracker : publishTrackers) {
+            publishTracker.onSubscribersFiltered(filterSubscribers, event, args);
         }
 
         List<ArkEventPublisherImpl> publishers = new ArrayList<>();
@@ -224,11 +252,25 @@ public class ArkEventDispatcherImpl implements ArkEventDispatcher {
             if (strategy == null) {
                 throw new ArkEventException("No execute strategy found for " + filterSubscriber);
             }
+
+            for (ArkEventPublishTracker publishTracker : publishTrackers) {
+                publishTracker.onEachSubscriberPublishStrategyAdapted(strategy, filterSubscriber, event, args);
+            }
+
             ArkEventExceptionHandler handler = subscriberExceptionHandlerMap.get(filterSubscriber);
             if (handler == null) {
                 throw new ArkEventException("No exception handler found for " + filterSubscriber);
             }
+
+            for (ArkEventPublishTracker publishTracker : publishTrackers) {
+                publishTracker.onEachSubscriberExceptionHandlerAdapted(handler, filterSubscriber, event, args);
+            }
+
             publishers.add(new ArkEventPublisherImpl(filterSubscriber, strategy, handler));
+        }
+
+        for (ArkEventPublishTracker publishTracker : publishTrackers) {
+            publishTracker.onPublishersCreated(publishers, event, args);
         }
 
         if (!publishSorters.isEmpty()) {
@@ -249,8 +291,16 @@ public class ArkEventDispatcherImpl implements ArkEventDispatcher {
             publishers.sort(comparator);
         }
 
+        for (ArkEventPublishTracker publishTracker : publishTrackers) {
+            publishTracker.onPublishersSorted(publishers, event, args);
+        }
+
         for (ArkEventPublisher publisher : publishers) {
             publisher.publish(event, args);
+        }
+
+        for (ArkEventPublishTracker publishTracker : publishTrackers) {
+            publishTracker.onPublishFinished(event, args);
         }
     }
 

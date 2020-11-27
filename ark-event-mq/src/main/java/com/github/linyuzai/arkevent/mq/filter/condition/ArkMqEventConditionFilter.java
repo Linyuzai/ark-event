@@ -1,10 +1,8 @@
-package com.github.linyuzai.arkevent.mq.support.filter.condition;
+package com.github.linyuzai.arkevent.mq.filter.condition;
 
 import com.github.linyuzai.arkevent.basic.ArkEvent;
 import com.github.linyuzai.arkevent.basic.ArkEventConditionFilter;
 import com.github.linyuzai.arkevent.basic.ArkEventSubscriber;
-import com.github.linyuzai.arkevent.mq.support.filter.condition.ArkMqEvent;
-import com.github.linyuzai.arkevent.mq.support.filter.condition.MqEvent;
 
 public class ArkMqEventConditionFilter implements ArkEventConditionFilter {
 

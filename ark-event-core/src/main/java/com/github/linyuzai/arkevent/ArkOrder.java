@@ -2,7 +2,6 @@ package com.github.linyuzai.arkevent;
 
 public interface ArkOrder {
 
-    int PUBLISH_STRATEGY_ADAPTER_REMOTE = -20;
     int PUBLISH_STRATEGY_ADAPTER_TRANSACTION = -10;
     int PUBLISH_STRATEGY_ADAPTER_DIRECT = 0;
 

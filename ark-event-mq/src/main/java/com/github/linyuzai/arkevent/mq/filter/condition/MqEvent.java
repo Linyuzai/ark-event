@@ -1,4 +1,4 @@
-package com.github.linyuzai.arkevent.mq.support.filter.condition;
+package com.github.linyuzai.arkevent.mq.filter.condition;
 
 import java.lang.annotation.*;
 

@@ -7,7 +7,7 @@ import com.github.linyuzai.arkevent.mq.ArkMqEventEncoder;
 import java.util.HashMap;
 import java.util.Map;
 
-public class JacksonMqEventEncoder implements ArkMqEventEncoder {
+public class JacksonMqEventEncoder implements ArkMqEventEncoder<String> {
 
     private ObjectMapper objectMapper;
 

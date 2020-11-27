@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.linyuzai.arkevent.basic.ArkEvent;
 import com.github.linyuzai.arkevent.mq.ArkMqEventDecoder;
 
-public class JacksonMqEventDecoder implements ArkMqEventDecoder {
+public class JacksonMqEventDecoder implements ArkMqEventDecoder<String> {
 
     private ObjectMapper objectMapper;
 

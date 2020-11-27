@@ -8,6 +8,7 @@ import com.github.linyuzai.arkevent.basic.impl.ArkEventDispatcherImpl;
 import com.github.linyuzai.arkevent.ArkHolder;
 import com.github.linyuzai.arkevent.basic.impl.filter.condition.group.GroupArkEventConditionFilterFactory;
 import com.github.linyuzai.arkevent.basic.impl.filter.condition.type.TypeArkEventConditionFilterFactory;
+import com.github.linyuzai.arkevent.basic.impl.handler.exception.logger.Slf4jArkEventExceptionHandlerAdapter;
 import com.github.linyuzai.arkevent.basic.impl.handler.exception.rethrow.RethrowArkEventExceptionHandlerAdapter;
 import com.github.linyuzai.arkevent.basic.impl.strategy.publish.DirectArkEventPublishStrategyAdapter;
 import org.springframework.context.annotation.Bean;
@@ -34,6 +35,11 @@ public class ArkEventAutoConfiguration {
     @Bean
     public RethrowArkEventExceptionHandlerAdapter rethrowArkEventExceptionHandlerAdapter() {
         return new RethrowArkEventExceptionHandlerAdapter();
+    }
+
+    @Bean
+    public Slf4jArkEventExceptionHandlerAdapter slf4jArkEventExceptionHandlerAdapter() {
+        return new Slf4jArkEventExceptionHandlerAdapter();
     }
 
     @Bean
