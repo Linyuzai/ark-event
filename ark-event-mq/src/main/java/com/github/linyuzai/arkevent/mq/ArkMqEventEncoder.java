@@ -1,6 +1,6 @@
 package com.github.linyuzai.arkevent.mq;
 
-import com.github.linyuzai.arkevent.ArkEventEncoder;
+import com.github.linyuzai.arkevent.remote.ArkEventEncoder;
 
 public interface ArkMqEventEncoder extends ArkEventEncoder<String> {
 

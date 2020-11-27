@@ -1,7 +1,7 @@
 package com.github.linyuzai.arkevent.mq.rabbit.impl;
 
-import com.github.linyuzai.arkevent.ArkEventModuleIdProvider;
-import com.github.linyuzai.arkevent.ArkEventModulesProvider;
+import com.github.linyuzai.arkevent.remote.ArkEventModuleIdProvider;
+import com.github.linyuzai.arkevent.remote.ArkEventModulesProvider;
 import com.github.linyuzai.arkevent.mq.rabbit.RabbitArkMqEventRoutingKeyProvider;
 
 import java.util.Collection;

@@ -2,8 +2,7 @@ package com.github.linyuzai.arkevent.autoconfigure.mq.decoder;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.github.linyuzai.arkevent.ArkEvent;
+import com.github.linyuzai.arkevent.basic.ArkEvent;
 import com.github.linyuzai.arkevent.mq.ArkMqEventDecoder;
 
 public class JacksonMqEventDecoder implements ArkMqEventDecoder {

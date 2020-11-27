@@ -1,8 +1,8 @@
 package com.github.linyuzai.arkevent.mq.support.strategy.publish;
 
-import com.github.linyuzai.arkevent.ArkEventPublishStrategy;
-import com.github.linyuzai.arkevent.ArkEventSubscriber;
-import com.github.linyuzai.arkevent.mq.support.filter.condition.type.MqArkEventSubscriberMask;
+import com.github.linyuzai.arkevent.basic.ArkEventPublishStrategy;
+import com.github.linyuzai.arkevent.basic.ArkEventSubscriber;
+import com.github.linyuzai.arkevent.mq.ArkMqEventRemoter;
 
 public class MqArkPublishStrategyAdapter implements ArkEventPublishStrategy.Adapter {
 
@@ -18,7 +18,7 @@ public class MqArkPublishStrategyAdapter implements ArkEventPublishStrategy.Adap
 
     @Override
     public ArkEventPublishStrategy adapt(ArkEventSubscriber subscriber) {
-        if (subscriber instanceof MqArkEventSubscriberMask) {
+        if (subscriber instanceof ArkMqEventRemoter) {
             return mqArkEventPublishStrategy;
         }
         return null;

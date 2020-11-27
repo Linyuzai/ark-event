@@ -1,6 +1,6 @@
 package com.github.linyuzai.arkevent.mq.rabbit.impl;
 
-import com.github.linyuzai.arkevent.ArkEventModuleIdProvider;
+import com.github.linyuzai.arkevent.remote.ArkEventModuleIdProvider;
 import org.springframework.beans.factory.annotation.Value;
 
 public class ApplicationNameArkEventModuleIdProvider implements ArkEventModuleIdProvider {

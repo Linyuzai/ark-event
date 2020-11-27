@@ -1,6 +1,6 @@
 package com.github.linyuzai.arkevent.sample1;
 
-import com.github.linyuzai.arkevent.ArkEventModulesProvider;
+import com.github.linyuzai.arkevent.remote.ArkEventModulesProvider;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration

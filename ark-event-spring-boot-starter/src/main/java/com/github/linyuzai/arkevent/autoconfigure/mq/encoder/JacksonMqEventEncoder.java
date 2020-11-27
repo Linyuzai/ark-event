@@ -1,7 +1,7 @@
 package com.github.linyuzai.arkevent.autoconfigure.mq.encoder;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.linyuzai.arkevent.ArkEvent;
+import com.github.linyuzai.arkevent.basic.ArkEvent;
 import com.github.linyuzai.arkevent.mq.ArkMqEventEncoder;
 
 import java.util.HashMap;
