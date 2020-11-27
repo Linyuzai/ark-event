@@ -3,21 +3,22 @@ package com.github.linyuzai.arkevent.support.strategy.publish.async;
 import com.github.linyuzai.arkevent.ArkEventPublishStrategy;
 import com.github.linyuzai.arkevent.ArkEventSubscriber;
 
-public class AsyncArkPublishStrategyAdapter implements ArkEventPublishStrategy.Adapter {
+public class AsyncArkEventPublishStrategyAdapter implements ArkEventPublishStrategy.Adapter {
 
     private AsyncArkEventPublishStrategy asyncArkEventPublishStrategy;
 
-    public AsyncArkPublishStrategyAdapter() {
+    public AsyncArkEventPublishStrategyAdapter() {
         this(new AsyncArkEventPublishStrategy());
     }
 
-    public AsyncArkPublishStrategyAdapter(AsyncArkEventPublishStrategy asyncArkEventPublishStrategy) {
+    public AsyncArkEventPublishStrategyAdapter(AsyncArkEventPublishStrategy asyncArkEventPublishStrategy) {
         this.asyncArkEventPublishStrategy = asyncArkEventPublishStrategy;
     }
 
     @Override
     public ArkEventPublishStrategy adapt(ArkEventSubscriber subscriber) {
-        if (subscriber.getClass().isAnnotationPresent(AsyncEventPublish.class)) {
+        if (subscriber instanceof AsyncEventPublishStrategy ||
+                subscriber.getClass().isAnnotationPresent(AsyncEventPublish.class)) {
             return asyncArkEventPublishStrategy;
         }
         return null;

@@ -11,7 +11,6 @@ public class RemoteArkEventConditionFilter implements ArkEventConditionFilter {
 
     @Override
     public boolean filter(ArkEventSubscriber subscriber, ArkEvent arkEvent, Object... args) {
-        long count = Arrays.stream(args).filter(it -> it instanceof ArkEventFromRemote).count();
-        return count == 0;
+        return ArkEventFromRemote.isRemote(args);
     }
 }

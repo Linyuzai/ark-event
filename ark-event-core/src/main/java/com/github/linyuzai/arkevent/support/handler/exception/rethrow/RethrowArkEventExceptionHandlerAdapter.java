@@ -3,13 +3,14 @@ package com.github.linyuzai.arkevent.support.handler.exception.rethrow;
 import com.github.linyuzai.arkevent.ArkEventExceptionHandler;
 import com.github.linyuzai.arkevent.ArkEventSubscriber;
 
-public class RethrowArkExceptionHandlerAdapter implements ArkEventExceptionHandler.Adapter {
+public class RethrowArkEventExceptionHandlerAdapter implements ArkEventExceptionHandler.Adapter {
 
     private RethrowArkEventExceptionHandler handler = new RethrowArkEventExceptionHandler();
 
     @Override
     public ArkEventExceptionHandler adapt(ArkEventSubscriber subscriber) {
-        if (subscriber.getClass().isAnnotationPresent(RethrowEventException.class)) {
+        if (subscriber instanceof RethrowEventExceptionHandler ||
+                subscriber.getClass().isAnnotationPresent(RethrowEventException.class)) {
             return handler;
         }
         return null;

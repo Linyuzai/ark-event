@@ -17,7 +17,7 @@ import com.github.linyuzai.arkevent.mq.rabbit.impl.ApplicationNameArkEventModule
 import com.github.linyuzai.arkevent.mq.rabbit.impl.DefaultRabbitArkMqEventRoutingKeyProvider;
 import com.github.linyuzai.arkevent.mq.transaction.ArkMqEventTransaction;
 import com.github.linyuzai.arkevent.mq.rabbit.transaction.RabbitArkMqEventTransactionMessageListenerContainer;
-import com.github.linyuzai.arkevent.mq.support.sorter.publish.MqArkEventPublishSorter;
+import com.github.linyuzai.arkevent.support.sorter.publish.remote.RemoteArkEventPublishSorter;
 import com.github.linyuzai.arkevent.support.filter.condition.remote.RemoteArkEventConditionFilterFactory;
 import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
@@ -64,8 +64,8 @@ public class ArkMqEventAutoConfiguration {
     }
 
     @Bean
-    public MqArkEventPublishSorter mqArkEventPublishSorter() {
-        return new MqArkEventPublishSorter();
+    public RemoteArkEventPublishSorter mqArkEventPublishSorter() {
+        return new RemoteArkEventPublishSorter();
     }
 
 

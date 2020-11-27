@@ -12,4 +12,9 @@ public class Slf4jArkEventExceptionHandlerAdapter implements ArkEventExceptionHa
         return handler;
         //TransactionSynchronizationManager.isActualTransactionActive()
     }
+
+    @Override
+    public int order() {
+        return EXCEPTION_HANDLER_ADAPTER_LOGGER;
+    }
 }

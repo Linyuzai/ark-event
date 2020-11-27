@@ -5,9 +5,9 @@ import com.github.linyuzai.arkevent.impl.ArkEventDispatcherImpl;
 import com.github.linyuzai.arkevent.support.ArkHolder;
 import com.github.linyuzai.arkevent.support.filter.condition.group.GroupArkEventConditionFilterFactory;
 import com.github.linyuzai.arkevent.support.filter.condition.type.TypeArkEventConditionFilterFactory;
-import com.github.linyuzai.arkevent.support.handler.exception.rethrow.RethrowArkExceptionHandlerAdapter;
-import com.github.linyuzai.arkevent.support.sorter.publish.AsyncArkEventPublishSorter;
-import com.github.linyuzai.arkevent.support.strategy.publish.direct.DirectArkPublishStrategyAdapter;
+import com.github.linyuzai.arkevent.support.handler.exception.rethrow.RethrowArkEventExceptionHandlerAdapter;
+import com.github.linyuzai.arkevent.support.sorter.publish.async.AsyncArkEventPublishSorter;
+import com.github.linyuzai.arkevent.support.strategy.publish.direct.DirectArkEventPublishStrategyAdapter;
 import org.springframework.context.annotation.Bean;
 
 import java.util.List;
@@ -25,13 +25,13 @@ public class ArkEventAutoConfiguration {
     }
 
     @Bean
-    public DirectArkPublishStrategyAdapter directArkEventPublishStrategyAdapter() {
-        return new DirectArkPublishStrategyAdapter();
+    public DirectArkEventPublishStrategyAdapter directArkEventPublishStrategyAdapter() {
+        return new DirectArkEventPublishStrategyAdapter();
     }
 
     @Bean
-    public RethrowArkExceptionHandlerAdapter rethrowArkEventExceptionHandlerAdapter() {
-        return new RethrowArkExceptionHandlerAdapter();
+    public RethrowArkEventExceptionHandlerAdapter rethrowArkEventExceptionHandlerAdapter() {
+        return new RethrowArkEventExceptionHandlerAdapter();
     }
 
     @Bean

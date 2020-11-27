@@ -232,12 +232,22 @@ public class ArkEventDispatcherImpl implements ArkEventDispatcher {
             publishers.add(new ArkEventPublisherImpl(filterSubscriber, strategy, handler));
         }
 
-        for (ArkEventPublishSorter publishSorter : publishSorters) {
-            publishers.sort((o1, o2) -> {
-                int order1 = publishSorter.sortOrder(o1.getStrategy(), o1.getSubscriber(), event, args);
-                int order2 = publishSorter.sortOrder(o2.getStrategy(), o2.getSubscriber(), event, args);
-                return order1 - order2;
-            });
+        if (!publishSorters.isEmpty()) {
+            Comparator<ArkEventPublisherImpl> comparator = null;
+            for (int i = 0; i < publishSorters.size(); i++) {
+                ArkEventPublishSorter publishSorter = publishSorters.get(i);
+                Comparator<ArkEventPublisherImpl> c = (o1, o2) -> {
+                    boolean order1 = publishSorter.highOrder(o1.getStrategy(), o1.getSubscriber(), event, args);
+                    boolean order2 = publishSorter.highOrder(o2.getStrategy(), o2.getSubscriber(), event, args);
+                    return (order1 ? 1 : 0) - (order2 ? 1 : 0);
+                };
+                if (i == 0) {
+                    comparator = c;
+                } else {
+                    comparator.thenComparing(c);
+                }
+            }
+            publishers.sort(comparator);
         }
 
         for (ArkEventPublisher publisher : publishers) {
