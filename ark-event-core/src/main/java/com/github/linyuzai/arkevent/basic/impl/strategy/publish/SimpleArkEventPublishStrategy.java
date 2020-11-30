@@ -6,7 +6,7 @@ import com.github.linyuzai.arkevent.basic.ArkEventSubscriber;
 import com.github.linyuzai.arkevent.basic.ArkEventExceptionHandler;
 import com.github.linyuzai.arkevent.ArkEventException;
 
-public class DirectArkEventPublishStrategy implements ArkEventPublishStrategy {
+public class SimpleArkEventPublishStrategy implements ArkEventPublishStrategy {
 
     @Override
     public void execute(ArkEventSubscriber subscriber, ArkEventExceptionHandler handler, ArkEvent event, Object... args) {

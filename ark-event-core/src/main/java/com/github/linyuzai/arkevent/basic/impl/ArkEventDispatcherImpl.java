@@ -2,7 +2,7 @@ package com.github.linyuzai.arkevent.basic.impl;
 
 import com.github.linyuzai.arkevent.basic.*;
 import com.github.linyuzai.arkevent.ArkEventException;
-import com.github.linyuzai.arkevent.ArkOrder;
+import com.github.linyuzai.arkevent.Order;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -26,7 +26,7 @@ public class ArkEventDispatcherImpl implements ArkEventDispatcher {
 
     private List<ArkEventPublishSorter> publishSorters = new CopyOnWriteArrayList<>();
 
-    private List<ArkEventPublishTracker> publishTrackers = new CopyOnWriteArrayList<>();
+    private List<ArkEventPublishListener> publishListeners = new CopyOnWriteArrayList<>();
 
     public synchronized void registerSubscriber(Collection<? extends ArkEventSubscriber> subscribers) {
         for (ArkEventSubscriber subscriber : subscribers) {
@@ -35,7 +35,7 @@ public class ArkEventDispatcherImpl implements ArkEventDispatcher {
             }
         }
         this.subscribers.addAll(subscribers);
-        this.subscribers.sort(Comparator.comparingInt(ArkOrder::order));
+        this.subscribers.sort(Comparator.comparingInt(Order::order));
         for (ArkEventSubscriber subscriber : subscribers) {
             filterConditions(subscriber);
             adaptPublishStrategy(subscriber);
@@ -48,7 +48,7 @@ public class ArkEventDispatcherImpl implements ArkEventDispatcher {
             throw new ArkEventException("ArkEventSubscriber is null");
         }
         this.subscribers.add(subscriber);
-        this.subscribers.sort(Comparator.comparingInt(ArkOrder::order));
+        this.subscribers.sort(Comparator.comparingInt(Order::order));
         filterConditions(subscriber);
         adaptPublishStrategy(subscriber);
         adaptExceptionHandler(subscriber);
@@ -92,7 +92,7 @@ public class ArkEventDispatcherImpl implements ArkEventDispatcher {
                     newFilters.add(conditionFilter);
                 }
             }
-            newFilters.sort(Comparator.comparingInt(ArkOrder::order));
+            newFilters.sort(Comparator.comparingInt(Order::order));
             subscriberConditionFilterMap.put(subscriber, newFilters);
         }
     }
@@ -106,7 +106,7 @@ public class ArkEventDispatcherImpl implements ArkEventDispatcher {
                     filterConditions(subscriber);
                 } else {
                     filters.add(conditionFilter);
-                    filters.sort(Comparator.comparingInt(ArkOrder::order));
+                    filters.sort(Comparator.comparingInt(Order::order));
                 }
             }
         }
@@ -119,7 +119,7 @@ public class ArkEventDispatcherImpl implements ArkEventDispatcher {
             }
         }
         this.publishStrategyAdapters.addAll(adapters);
-        this.publishStrategyAdapters.sort(Comparator.comparingInt(ArkOrder::order));
+        this.publishStrategyAdapters.sort(Comparator.comparingInt(Order::order));
         for (ArkEventSubscriber subscriber : subscribers) {
             adaptPublishStrategy(subscriber);
         }
@@ -130,7 +130,7 @@ public class ArkEventDispatcherImpl implements ArkEventDispatcher {
             throw new ArkEventException("ArkEventPublishStrategy.Adapter is null");
         }
         this.publishStrategyAdapters.add(adapter);
-        this.publishStrategyAdapters.sort(Comparator.comparingInt(ArkOrder::order));
+        this.publishStrategyAdapters.sort(Comparator.comparingInt(Order::order));
         for (ArkEventSubscriber subscriber : subscribers) {
             adaptPublishStrategy(subscriber);
         }
@@ -157,7 +157,7 @@ public class ArkEventDispatcherImpl implements ArkEventDispatcher {
             }
         }
         this.exceptionHandlerAdapters.addAll(adapters);
-        this.exceptionHandlerAdapters.sort(Comparator.comparingInt(ArkOrder::order));
+        this.exceptionHandlerAdapters.sort(Comparator.comparingInt(Order::order));
         for (ArkEventSubscriber subscriber : subscribers) {
             adaptExceptionHandler(subscriber);
         }
@@ -168,7 +168,7 @@ public class ArkEventDispatcherImpl implements ArkEventDispatcher {
             throw new ArkEventException("ArkEventExceptionHandler.Adapter is null");
         }
         this.exceptionHandlerAdapters.add(adapter);
-        this.exceptionHandlerAdapters.sort(Comparator.comparingInt(ArkOrder::order));
+        this.exceptionHandlerAdapters.sort(Comparator.comparingInt(Order::order));
         for (ArkEventSubscriber subscriber : subscribers) {
             adaptExceptionHandler(subscriber);
         }
@@ -195,7 +195,7 @@ public class ArkEventDispatcherImpl implements ArkEventDispatcher {
             }
         }
         publishSorters.addAll(sorters);
-        publishSorters.sort(Comparator.comparingInt(ArkOrder::order));
+        publishSorters.sort(Comparator.comparingInt(Order::order));
     }
 
     public void addPublishSorter(ArkEventPublishSorter sorter) {
@@ -203,28 +203,37 @@ public class ArkEventDispatcherImpl implements ArkEventDispatcher {
             throw new ArkEventException("ArkEventPublishSorter is null");
         }
         publishSorters.add(sorter);
-        publishSorters.sort(Comparator.comparingInt(ArkOrder::order));
+        publishSorters.sort(Comparator.comparingInt(Order::order));
     }
 
     public List<ArkEventPublishSorter> getPublishSorters() {
         return publishSorters;
     }
 
-    public void addPublishTracker(ArkEventPublishTracker tracker) {
-        if (tracker == null) {
-            throw new ArkEventException("ArkEventPublishTracker is null");
+    public void addPublishListener(Collection<? extends ArkEventPublishListener> listeners) {
+        for (ArkEventPublishListener listener : listeners) {
+            if (listener == null) {
+                throw new ArkEventException("ArkEventPublishListener is null");
+            }
         }
-        this.publishTrackers.add(tracker);
+        this.publishListeners.addAll(listeners);
     }
 
-    public List<ArkEventPublishTracker> getPublishTrackers() {
-        return publishTrackers;
+    public void addPublishListener(ArkEventPublishListener listener) {
+        if (listener == null) {
+            throw new ArkEventException("ArkEventPublishListener is null");
+        }
+        this.publishListeners.add(listener);
+    }
+
+    public List<ArkEventPublishListener> getPublishListeners() {
+        return publishListeners;
     }
 
     @Override
     public void dispatch(ArkEvent event, Object... args) {
-        for (ArkEventPublishTracker publishTracker : publishTrackers) {
-            publishTracker.onPublishStarted(event, args);
+        for (ArkEventPublishListener publishListener : publishListeners) {
+            publishListener.onPublishStarted(event, args);
         }
 
         List<ArkEventSubscriber> filterSubscribers = new ArrayList<>();
@@ -232,18 +241,18 @@ public class ArkEventDispatcherImpl implements ArkEventDispatcher {
             List<ArkEventConditionFilter> filters = subscriberConditionFilterMap.getOrDefault(subscriber, Collections.emptyList());
             if (filterSubscriber(filters, subscriber, event, args)) {
                 filterSubscribers.add(subscriber);
-                for (ArkEventPublishTracker publishTracker : publishTrackers) {
-                    publishTracker.onEachSubscriberConditionsFiltered(true, subscriber, filters, event, args);
+                for (ArkEventPublishListener publishListener : publishListeners) {
+                    publishListener.onEachSubscriberConditionsFiltered(true, subscriber, filters, event, args);
                 }
             } else {
-                for (ArkEventPublishTracker publishTracker : publishTrackers) {
-                    publishTracker.onEachSubscriberConditionsFiltered(false, subscriber, filters, event, args);
+                for (ArkEventPublishListener publishListener : publishListeners) {
+                    publishListener.onEachSubscriberConditionsFiltered(false, subscriber, filters, event, args);
                 }
             }
         }
 
-        for (ArkEventPublishTracker publishTracker : publishTrackers) {
-            publishTracker.onSubscribersFiltered(filterSubscribers, event, args);
+        for (ArkEventPublishListener publishListener : publishListeners) {
+            publishListener.onSubscribersFiltered(filterSubscribers, event, args);
         }
 
         List<ArkEventPublisherImpl> publishers = new ArrayList<>();
@@ -253,8 +262,8 @@ public class ArkEventDispatcherImpl implements ArkEventDispatcher {
                 throw new ArkEventException("No execute strategy found for " + filterSubscriber);
             }
 
-            for (ArkEventPublishTracker publishTracker : publishTrackers) {
-                publishTracker.onEachSubscriberPublishStrategyAdapted(strategy, filterSubscriber, event, args);
+            for (ArkEventPublishListener publishListener : publishListeners) {
+                publishListener.onEachSubscriberPublishStrategyAdapted(strategy, filterSubscriber, event, args);
             }
 
             ArkEventExceptionHandler handler = subscriberExceptionHandlerMap.get(filterSubscriber);
@@ -262,15 +271,15 @@ public class ArkEventDispatcherImpl implements ArkEventDispatcher {
                 throw new ArkEventException("No exception handler found for " + filterSubscriber);
             }
 
-            for (ArkEventPublishTracker publishTracker : publishTrackers) {
-                publishTracker.onEachSubscriberExceptionHandlerAdapted(handler, filterSubscriber, event, args);
+            for (ArkEventPublishListener publishListener : publishListeners) {
+                publishListener.onEachSubscriberExceptionHandlerAdapted(handler, filterSubscriber, event, args);
             }
 
             publishers.add(new ArkEventPublisherImpl(filterSubscriber, strategy, handler));
         }
 
-        for (ArkEventPublishTracker publishTracker : publishTrackers) {
-            publishTracker.onPublishersCreated(publishers, event, args);
+        for (ArkEventPublishListener publishListener : publishListeners) {
+            publishListener.onPublishersCreated(publishers, event, args);
         }
 
         if (!publishSorters.isEmpty()) {
@@ -291,16 +300,16 @@ public class ArkEventDispatcherImpl implements ArkEventDispatcher {
             publishers.sort(comparator);
         }
 
-        for (ArkEventPublishTracker publishTracker : publishTrackers) {
-            publishTracker.onPublishersSorted(publishers, event, args);
+        for (ArkEventPublishListener publishListener : publishListeners) {
+            publishListener.onPublishersSorted(publishers, event, args);
         }
 
         for (ArkEventPublisher publisher : publishers) {
             publisher.publish(event, args);
         }
 
-        for (ArkEventPublishTracker publishTracker : publishTrackers) {
-            publishTracker.onPublishFinished(event, args);
+        for (ArkEventPublishListener publishListener : publishListeners) {
+            publishListener.onPublishFinished(event, args);
         }
     }
 

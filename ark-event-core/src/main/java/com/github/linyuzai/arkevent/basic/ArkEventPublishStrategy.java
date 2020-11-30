@@ -1,12 +1,12 @@
 package com.github.linyuzai.arkevent.basic;
 
-import com.github.linyuzai.arkevent.ArkOrder;
+import com.github.linyuzai.arkevent.Order;
 
 public interface ArkEventPublishStrategy {
 
     void execute(ArkEventSubscriber subscriber, ArkEventExceptionHandler handler, ArkEvent event, Object... args);
 
-    interface Adapter extends ArkOrder {
+    interface Adapter extends Order {
 
         ArkEventPublishStrategy adapt(ArkEventSubscriber subscriber);
     }

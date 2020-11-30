@@ -4,7 +4,6 @@ import com.github.linyuzai.arkevent.basic.ArkEventPublishStrategy;
 import com.github.linyuzai.arkevent.basic.ArkEventSubscriber;
 import com.github.linyuzai.arkevent.transaction.ArkEventTransaction;
 import com.github.linyuzai.arkevent.transaction.ArkEventTransactionManager;
-import com.github.linyuzai.arkevent.transaction.ArkEventTransactionSubscriber;
 
 public class TransactionArkEventPublishStrategyAdapter implements ArkEventPublishStrategy.Adapter {
 
@@ -20,8 +19,7 @@ public class TransactionArkEventPublishStrategyAdapter implements ArkEventPublis
 
     @Override
     public ArkEventPublishStrategy adapt(ArkEventSubscriber subscriber) {
-        if (subscriber instanceof ArkEventTransactionSubscriber ||
-                subscriber.getClass().isAnnotationPresent(ArkEventTransaction.class)) {
+        if (subscriber.getClass().isAnnotationPresent(ArkEventTransaction.class)) {
             return transactionArkEventPublishStrategy;
         }
         return null;

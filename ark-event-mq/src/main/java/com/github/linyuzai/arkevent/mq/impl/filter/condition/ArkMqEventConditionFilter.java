@@ -1,4 +1,4 @@
-package com.github.linyuzai.arkevent.mq.filter.condition;
+package com.github.linyuzai.arkevent.mq.impl.filter.condition;
 
 import com.github.linyuzai.arkevent.basic.ArkEvent;
 import com.github.linyuzai.arkevent.basic.ArkEventConditionFilter;

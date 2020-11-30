@@ -3,7 +3,6 @@ package com.github.linyuzai.arkevent.transaction.handler.exception;
 import com.github.linyuzai.arkevent.basic.ArkEventExceptionHandler;
 import com.github.linyuzai.arkevent.basic.ArkEventSubscriber;
 import com.github.linyuzai.arkevent.transaction.ArkEventTransaction;
-import com.github.linyuzai.arkevent.transaction.ArkEventTransactionSubscriber;
 
 public class TransactionArkEventExceptionHandlerAdapter implements ArkEventExceptionHandler.Adapter {
 
@@ -15,8 +14,7 @@ public class TransactionArkEventExceptionHandlerAdapter implements ArkEventExcep
 
     @Override
     public ArkEventExceptionHandler adapt(ArkEventSubscriber subscriber) {
-        if (subscriber instanceof ArkEventTransactionSubscriber ||
-                subscriber.getClass().isAnnotationPresent(ArkEventTransaction.class)) {
+        if (subscriber.getClass().isAnnotationPresent(ArkEventTransaction.class)) {
             return handler;
         }
         return null;

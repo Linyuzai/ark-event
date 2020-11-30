@@ -10,9 +10,7 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-@Import({ArkMqEventAutoConfiguration.class,
-        ArkMqEventAutoConfiguration.RabbitArkMqEventAutoConfiguration.class,
-        ArkMqEventAutoConfiguration.FinalAutoConfiguration.class})
+@Import({ArkMqEventAutoConfiguration.class})
 @EnableArkEvent
 public @interface EnableArkMqEvent {
 

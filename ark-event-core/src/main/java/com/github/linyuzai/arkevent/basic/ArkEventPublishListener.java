@@ -2,7 +2,7 @@ package com.github.linyuzai.arkevent.basic;
 
 import java.util.List;
 
-public interface ArkEventPublishTracker {
+public interface ArkEventPublishListener {
 
     default void onPublishStarted(ArkEvent event, Object... args) {
 
