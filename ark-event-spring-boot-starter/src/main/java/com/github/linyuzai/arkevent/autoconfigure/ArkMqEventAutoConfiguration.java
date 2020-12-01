@@ -5,6 +5,7 @@ import com.github.linyuzai.arkevent.autoconfigure.encoder.JacksonMqEventEncoder;
 import com.github.linyuzai.arkevent.mq.*;
 import com.github.linyuzai.arkevent.mq.impl.filter.condition.ArkMqEventConditionFilterFactory;
 import com.github.linyuzai.arkevent.mq.impl.filter.condition.MqEvent;
+import com.github.linyuzai.arkevent.mq.impl.handler.exception.ArkMqEventExceptionHandler;
 import com.github.linyuzai.arkevent.mq.impl.handler.exception.ArkMqEventExceptionHandlerAdapter;
 import com.github.linyuzai.arkevent.mq.impl.sorter.publish.ArkMqEventPublishSorter;
 import com.github.linyuzai.arkevent.mq.impl.strategy.publish.ArkMqEventPublishStrategyAdapter;
@@ -107,8 +108,16 @@ public class ArkMqEventAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(RabbitArkMqEventMessageListener.class)
-    public RabbitArkMqEventMessageListener rabbitArkMqEventMessageListener(ArkMqEventDecoder decoder) {
-        return new RabbitArkMqEventMessageListener(decoder);
+    public RabbitArkMqEventMessageListener rabbitArkMqEventMessageListener(ArkMqEventIdempotentHandler idempotentHandler,
+                                                                           ArkEventTransactionManager transactionManager,
+                                                                           ArkMqEventDecoder decoder,
+                                                                           ArkMqEventExceptionHandler exceptionHandler) {
+        RabbitArkMqEventMessageListener listener = new RabbitArkMqEventMessageListener();
+        listener.setIdempotentHandler(idempotentHandler);
+        listener.setTransactionManager(transactionManager);
+        listener.setDecoder(decoder);
+        listener.setExceptionHandler(exceptionHandler);
+        return listener;
     }
 
     @Bean

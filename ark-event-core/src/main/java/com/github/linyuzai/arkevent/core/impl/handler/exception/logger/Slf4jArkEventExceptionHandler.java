@@ -9,7 +9,17 @@ import java.util.Arrays;
 
 public class Slf4jArkEventExceptionHandler implements ArkEventExceptionHandler {
 
-    private Logger logger = LoggerFactory.getLogger(Slf4jArkEventExceptionHandler.class);
+    private static Logger log = LoggerFactory.getLogger(Slf4jArkEventExceptionHandler.class);
+
+    private final Logger logger;
+
+    public Slf4jArkEventExceptionHandler() {
+        this(log);
+    }
+
+    public Slf4jArkEventExceptionHandler(Logger logger) {
+        this.logger = logger;
+    }
 
     @Override
     public void handle(ArkEventException ex) {

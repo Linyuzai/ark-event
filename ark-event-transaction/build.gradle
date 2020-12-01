@@ -14,7 +14,5 @@ repositories {
 dependencies {
     implementation 'org.slf4j:slf4j-api:1.7.25'
     implementation project(':ark-event-core')
-    implementation project(':ark-event-transaction')
-    //implementation fileTree(dir: 'lib', includes: ['*.jar'])
     testCompile group: 'junit', name: 'junit', version: '4.12'
 }
