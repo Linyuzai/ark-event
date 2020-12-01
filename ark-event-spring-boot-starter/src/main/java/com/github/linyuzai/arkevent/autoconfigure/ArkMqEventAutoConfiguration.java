@@ -2,6 +2,7 @@ package com.github.linyuzai.arkevent.autoconfigure;
 
 import com.github.linyuzai.arkevent.autoconfigure.decoder.JacksonMqEventDecoder;
 import com.github.linyuzai.arkevent.autoconfigure.encoder.JacksonMqEventEncoder;
+import com.github.linyuzai.arkevent.core.ArkEvent;
 import com.github.linyuzai.arkevent.mq.*;
 import com.github.linyuzai.arkevent.mq.impl.filter.condition.ArkMqEventConditionFilterFactory;
 import com.github.linyuzai.arkevent.mq.impl.filter.condition.MqEvent;
@@ -9,6 +10,7 @@ import com.github.linyuzai.arkevent.mq.impl.handler.exception.ArkMqEventExceptio
 import com.github.linyuzai.arkevent.mq.impl.handler.exception.ArkMqEventExceptionHandlerAdapter;
 import com.github.linyuzai.arkevent.mq.impl.sorter.publish.ArkMqEventPublishSorter;
 import com.github.linyuzai.arkevent.mq.impl.strategy.publish.ArkMqEventPublishStrategyAdapter;
+import com.github.linyuzai.arkevent.mq.properties.ArkMqEventProperties;
 import com.github.linyuzai.arkevent.mq.rabbit.RabbitArkMqEventQueue;
 import com.github.linyuzai.arkevent.mq.rabbit.RabbitArkMqEventRoutingKeyProvider;
 import com.github.linyuzai.arkevent.mq.rabbit.RabbitArkMqEventTopicExchange;
@@ -22,18 +24,61 @@ import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 
 @AutoConfigureAfter(ArkEventTransactionAutoConfiguration.class)
 @ConditionalOnClass(MqEvent.class)
 public class ArkMqEventAutoConfiguration {
 
-    @Value("${ark-event.mq.queue-prefix:Queue@ArkEvent.}")
-    private String queuePrefix;
+    @Bean
+    @ConditionalOnMissingBean(ArkMqEventProperties.class)
+    @ConfigurationProperties(prefix = "ark-event.mq")
+    public ArkMqEventProperties arkMqEventProperties() {
+        return new ArkMqEventProperties();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(RabbitArkMqEventTopicExchange.class)
+    public RabbitArkMqEventTopicExchange rabbitArkMqEventTopicExchange(ArkMqEventProperties arkMqEventProperties) {
+        return new RabbitArkMqEventTopicExchange(arkMqEventProperties.getExchangeName());
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(RabbitArkMqEventQueue.class)
+    public RabbitArkMqEventQueue rabbitArkMqEventQueue(ArkMqEventProperties arkMqEventProperties,
+                                                       ArkMqEventModuleIdProvider idProvider) {
+        return new RabbitArkMqEventQueue(arkMqEventProperties.getQueuePrefix() + idProvider.getModuleId().toUpperCase());
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(RabbitArkMqEventRoutingKeyProvider.class)
+    public RabbitArkMqEventRoutingKeyProvider rabbitArkMqEventRoutingKeyProvider(
+            ArkMqEventModuleIdProvider idProvider, ArkMqEventModulesProvider moduleProvider) {
+        return new DefaultRabbitArkMqEventRoutingKeyProvider(idProvider, moduleProvider);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(RabbitAdmin.class)
+    public RabbitAdmin rabbitAdmin(ConnectionFactory factory) {
+        return new RabbitAdmin(factory);
+    }
+
+    @Bean
+    public Object rabbitArkEventBinding(RabbitAdmin admin,
+                                        RabbitArkMqEventTopicExchange exchange,
+                                        RabbitArkMqEventQueue queue,
+                                        RabbitArkMqEventRoutingKeyProvider routingKeyProvider) {
+        admin.declareExchange(exchange);
+        admin.declareQueue(queue);
+        for (String routingKey : routingKeyProvider.getRoutingKeys()) {
+            admin.declareBinding(BindingBuilder.bind(queue).to(exchange).with(routingKey));
+        }
+        return new Object();
+    }
 
     @Bean
     @ConditionalOnMissingBean(ArkMqEventEncoder.class)
@@ -95,15 +140,24 @@ public class ArkMqEventAutoConfiguration {
     }
 
     @Bean
-    @ConditionalOnMissingBean(RabbitArkMqEventTopicExchange.class)
-    public RabbitArkMqEventTopicExchange rabbitArkMqEventTopicExchange() {
-        return new RabbitArkMqEventTopicExchange("Exchange@ArkEvent.Topic");
-    }
+    @ConditionalOnMissingBean(ArkMqEventIdempotentHandler.class)
+    public ArkMqEventIdempotentHandler arkMqEventIdempotentHandler() {
+        return new ArkMqEventIdempotentHandler() {
+            @Override
+            public String getEventId(ArkEvent event, Object... args) {
+                return "ark-event-id";
+            }
 
-    @Bean
-    @ConditionalOnMissingBean(RabbitArkMqEventQueue.class)
-    public RabbitArkMqEventQueue rabbitArkMqEventQueue(ArkMqEventModuleIdProvider idProvider) {
-        return new RabbitArkMqEventQueue(queuePrefix + idProvider.getModuleId().toUpperCase());
+            @Override
+            public boolean isEventHandled(String eventId, ArkMqEventDecoder decoder, Object o) {
+                return false;
+            }
+
+            @Override
+            public void onEventRepeated(String eventId, ArkMqEventDecoder decoder, Object o) {
+
+            }
+        };
     }
 
     @Bean
@@ -130,31 +184,5 @@ public class ArkMqEventAutoConfiguration {
         container.setQueueNames(rabbitArkMqEventQueue.getName());
         container.setMessageListener(listener);
         return container;
-    }
-
-    @Bean
-    @ConditionalOnMissingBean(RabbitArkMqEventRoutingKeyProvider.class)
-    public RabbitArkMqEventRoutingKeyProvider rabbitArkMqEventRoutingKeyProvider(
-            ArkMqEventModuleIdProvider idProvider, ArkMqEventModulesProvider moduleProvider) {
-        return new DefaultRabbitArkMqEventRoutingKeyProvider(idProvider, moduleProvider);
-    }
-
-    @Bean
-    @ConditionalOnMissingBean(RabbitAdmin.class)
-    public RabbitAdmin rabbitAdmin(ConnectionFactory factory) {
-        return new RabbitAdmin(factory);
-    }
-
-    @Bean
-    public Object rabbitArkEventBinding(RabbitAdmin admin,
-                                        RabbitArkMqEventTopicExchange exchange,
-                                        RabbitArkMqEventQueue queue,
-                                        RabbitArkMqEventRoutingKeyProvider routingKeyProvider) {
-        admin.declareExchange(exchange);
-        admin.declareQueue(queue);
-        for (String routingKey : routingKeyProvider.getRoutingKeys()) {
-            admin.declareBinding(BindingBuilder.bind(queue).to(exchange).with(routingKey));
-        }
-        return new Object();
     }
 }
