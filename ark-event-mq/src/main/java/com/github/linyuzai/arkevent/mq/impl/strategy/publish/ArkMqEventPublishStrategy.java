@@ -21,7 +21,7 @@ public class ArkMqEventPublishStrategy implements ArkEventPublishStrategy {
             subscriber.onSubscribe(event, args);
         } catch (Throwable e) {
             ArkEventException aee = new ArkEventException(e, subscriber, this, event, args);
-            if (transactionManager.isInTransaction()) {
+            if (transactionManager.isInTransaction(event, args)) {
                 throw aee;
             } else {
                 handler.handle(aee);

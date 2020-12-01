@@ -25,7 +25,7 @@ public class TransactionArkEventPublishStrategy implements ArkEventPublishStrate
             if (ArkEventPlugin.isFromRemote(args)) {
                 handler.handle(aee);
             } else {
-                if (transactionManager.isInTransaction()) {
+                if (transactionManager.isInTransaction(event, args)) {
                     throw aee;
                 } else {
                     handler.handle(aee);

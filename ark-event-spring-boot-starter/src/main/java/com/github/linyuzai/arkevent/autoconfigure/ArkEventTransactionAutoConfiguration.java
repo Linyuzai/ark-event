@@ -19,7 +19,7 @@ public class ArkEventTransactionAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(ArkEventTransactionManager.class)
     public ArkEventTransactionManager arkEventTransactionManager() {
-        return () -> false;
+        return (arkEvent, args) -> false;
     }
 
     @Bean
