@@ -30,8 +30,9 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-amqp'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation project(':ark-event-core')
-    implementation project(':ark-event-mq')
-    implementation project(':ark-event-mq-rabbit')
+    //implementation project(':ark-event-transaction')
+    //implementation project(':ark-event-mq')
+    //implementation project(':ark-event-mq-rabbit')
     implementation project(':ark-event-spring-boot-starter')
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }

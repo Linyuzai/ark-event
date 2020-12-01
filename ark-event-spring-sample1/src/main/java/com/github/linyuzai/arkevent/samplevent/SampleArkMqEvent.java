@@ -1,8 +1,8 @@
 package com.github.linyuzai.arkevent.samplevent;
 
-import com.github.linyuzai.arkevent.mq.impl.filter.condition.ArkMqEvent;
+import com.github.linyuzai.arkevent.core.ArkEvent;
 
-public class SampleArkMqEvent implements ArkMqEvent {
+public class SampleArkMqEvent implements ArkEvent {
 
     private String sample;
 

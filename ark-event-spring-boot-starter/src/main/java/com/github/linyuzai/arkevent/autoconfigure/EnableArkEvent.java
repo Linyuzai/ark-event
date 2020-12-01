@@ -6,7 +6,9 @@ import java.lang.annotation.*;
 
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-@Import(ArkEventAutoConfiguration.class)
+@Import({ArkEventAutoConfiguration.class,
+        ArkEventTransactionAutoConfiguration.class,
+        ArkMqEventAutoConfiguration.class})
 public @interface EnableArkEvent {
 
 }

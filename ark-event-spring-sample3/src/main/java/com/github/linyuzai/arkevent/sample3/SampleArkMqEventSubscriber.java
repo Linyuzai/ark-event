@@ -1,9 +1,9 @@
 package com.github.linyuzai.arkevent.sample3;
 
-import com.github.linyuzai.arkevent.basic.ArkEvent;
-import com.github.linyuzai.arkevent.basic.ArkEventSubscriber;
+import com.github.linyuzai.arkevent.core.ArkEvent;
+import com.github.linyuzai.arkevent.core.ArkEventSubscriber;
 import com.github.linyuzai.arkevent.samplevent.SampleArkMqEvent;
-import com.github.linyuzai.arkevent.basic.impl.filter.condition.type.OnEventType;
+import com.github.linyuzai.arkevent.core.impl.filter.condition.type.OnEventType;
 import org.springframework.stereotype.Component;
 
 @Component

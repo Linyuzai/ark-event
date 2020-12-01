@@ -13,6 +13,7 @@ repositories {
 
 dependencies {
     implementation project(':ark-event-core')
+    implementation project(':ark-event-transaction')
     //implementation fileTree(dir: 'lib', includes: ['*.jar'])
     testCompile group: 'junit', name: 'junit', version: '4.12'
 }

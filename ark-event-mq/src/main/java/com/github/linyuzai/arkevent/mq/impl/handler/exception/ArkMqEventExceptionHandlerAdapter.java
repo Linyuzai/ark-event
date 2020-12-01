@@ -1,8 +1,8 @@
 package com.github.linyuzai.arkevent.mq.impl.handler.exception;
 
-import com.github.linyuzai.arkevent.basic.ArkEventExceptionHandler;
-import com.github.linyuzai.arkevent.basic.ArkEventSubscriber;
-import com.github.linyuzai.arkevent.mq.ArkMqEventRemoter;
+import com.github.linyuzai.arkevent.core.ArkEventExceptionHandler;
+import com.github.linyuzai.arkevent.core.ArkEventSubscriber;
+import com.github.linyuzai.arkevent.mq.ArkMqEventSubscriber;
 
 public class ArkMqEventExceptionHandlerAdapter implements ArkEventExceptionHandler.Adapter {
 
@@ -22,7 +22,7 @@ public class ArkMqEventExceptionHandlerAdapter implements ArkEventExceptionHandl
 
     @Override
     public ArkEventExceptionHandler adapt(ArkEventSubscriber subscriber) {
-        if (subscriber instanceof ArkMqEventRemoter) {
+        if (subscriber instanceof ArkMqEventSubscriber) {
             return handler;
         }
         return null;
@@ -30,6 +30,6 @@ public class ArkMqEventExceptionHandlerAdapter implements ArkEventExceptionHandl
 
     @Override
     public int order() {
-        return EXCEPTION_HANDLER_ADAPTER_REMOTE;
+        return EXCEPTION_HANDLER_ADAPTER_MQ;
     }
 }

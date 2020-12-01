@@ -1,7 +1,7 @@
 package com.github.linyuzai.arkevent.mq.rabbit.impl;
 
-import com.github.linyuzai.arkevent.remote.ArkEventModuleIdProvider;
-import com.github.linyuzai.arkevent.remote.ArkEventModulesProvider;
+import com.github.linyuzai.arkevent.mq.ArkMqEventModuleIdProvider;
+import com.github.linyuzai.arkevent.mq.ArkMqEventModulesProvider;
 import com.github.linyuzai.arkevent.mq.rabbit.RabbitArkMqEventRoutingKeyProvider;
 
 import java.util.Collection;
@@ -14,7 +14,7 @@ public class DefaultRabbitArkMqEventRoutingKeyProvider implements RabbitArkMqEve
 
     private String routingKey;
 
-    public DefaultRabbitArkMqEventRoutingKeyProvider(ArkEventModuleIdProvider idProvider, ArkEventModulesProvider moduleProvider) {
+    public DefaultRabbitArkMqEventRoutingKeyProvider(ArkMqEventModuleIdProvider idProvider, ArkMqEventModulesProvider moduleProvider) {
         String lowerCaseModule = idProvider.getModuleId().toLowerCase();
         this.routingKey = getRoutingKey0(lowerCaseModule);
         for (String module : moduleProvider.getModules()) {

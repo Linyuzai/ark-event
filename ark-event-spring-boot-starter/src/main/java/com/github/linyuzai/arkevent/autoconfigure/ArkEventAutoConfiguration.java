@@ -1,19 +1,14 @@
 package com.github.linyuzai.arkevent.autoconfigure;
 
-import com.github.linyuzai.arkevent.ArkEventException;
-import com.github.linyuzai.arkevent.basic.*;
-import com.github.linyuzai.arkevent.basic.impl.ArkEventDispatcherImpl;
-import com.github.linyuzai.arkevent.ArkEventPlugin;
-import com.github.linyuzai.arkevent.basic.impl.filter.condition.group.GroupArkEventConditionFilterFactory;
-import com.github.linyuzai.arkevent.basic.impl.filter.condition.type.TypeArkEventConditionFilterFactory;
-import com.github.linyuzai.arkevent.basic.impl.handler.exception.logger.Slf4jArkEventExceptionHandlerAdapter;
-import com.github.linyuzai.arkevent.basic.impl.handler.exception.rethrow.RethrowArkEventExceptionHandlerAdapter;
-import com.github.linyuzai.arkevent.basic.impl.strategy.publish.SimpleArkEventPublishStrategyAdapter;
-import com.github.linyuzai.arkevent.transaction.ArkEventTransactionManager;
-import com.github.linyuzai.arkevent.transaction.handler.exception.TransactionArkEventExceptionHandler;
-import com.github.linyuzai.arkevent.transaction.handler.exception.TransactionArkEventExceptionHandlerAdapter;
-import com.github.linyuzai.arkevent.transaction.sorter.publish.TransactionArkEventPublishSorter;
-import com.github.linyuzai.arkevent.transaction.strategy.publish.TransactionArkEventPublishStrategyAdapter;
+import com.github.linyuzai.arkevent.autoconfigure.listener.DefaultArkEventPublishListener;
+import com.github.linyuzai.arkevent.core.*;
+import com.github.linyuzai.arkevent.core.impl.ArkEventDispatcherImpl;
+import com.github.linyuzai.arkevent.support.ArkEventPlugin;
+import com.github.linyuzai.arkevent.core.impl.filter.condition.group.GroupArkEventConditionFilterFactory;
+import com.github.linyuzai.arkevent.core.impl.filter.condition.type.TypeArkEventConditionFilterFactory;
+import com.github.linyuzai.arkevent.core.impl.handler.exception.logger.Slf4jArkEventExceptionHandlerAdapter;
+import com.github.linyuzai.arkevent.core.impl.handler.exception.rethrow.RethrowArkEventExceptionHandlerAdapter;
+import com.github.linyuzai.arkevent.core.impl.strategy.publish.SimpleArkEventPublishStrategyAdapter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 
@@ -35,7 +30,7 @@ public class ArkEventAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(SimpleArkEventPublishStrategyAdapter.class)
-    public SimpleArkEventPublishStrategyAdapter directArkEventPublishStrategyAdapter() {
+    public SimpleArkEventPublishStrategyAdapter simpleArkEventPublishStrategyAdapter() {
         return new SimpleArkEventPublishStrategyAdapter();
     }
 
@@ -52,38 +47,9 @@ public class ArkEventAutoConfiguration {
     }
 
     @Bean
-    @ConditionalOnMissingBean(ArkEventTransactionManager.class)
-    public ArkEventTransactionManager arkEventTransactionManager() {
-        return () -> false;
-    }
-
-    @Bean
-    @ConditionalOnMissingBean(TransactionArkEventPublishStrategyAdapter.class)
-    public TransactionArkEventPublishStrategyAdapter transactionArkEventPublishStrategyAdapter(ArkEventTransactionManager transactionManager) {
-        return new TransactionArkEventPublishStrategyAdapter(transactionManager);
-    }
-
-    @Bean
-    @ConditionalOnMissingBean(TransactionArkEventExceptionHandler.class)
-    public TransactionArkEventExceptionHandler transactionArkEventExceptionHandler() {
-        return new TransactionArkEventExceptionHandler() {
-            @Override
-            public void handleTransactionException(ArkEventException ex) throws Throwable {
-
-            }
-        };
-    }
-
-    @Bean
-    @ConditionalOnMissingBean(TransactionArkEventExceptionHandlerAdapter.class)
-    public TransactionArkEventExceptionHandlerAdapter transactionArkEventExceptionHandlerAdapter(TransactionArkEventExceptionHandler handler) {
-        return new TransactionArkEventExceptionHandlerAdapter(handler);
-    }
-
-    @Bean
-    @ConditionalOnMissingBean(TransactionArkEventPublishSorter.class)
-    public TransactionArkEventPublishSorter transactionArkEventPublishSorter() {
-        return new TransactionArkEventPublishSorter();
+    @ConditionalOnMissingBean(ArkEventPublishListener.class)
+    public DefaultArkEventPublishListener defaultArkEventPublishListener() {
+        return new DefaultArkEventPublishListener();
     }
 
     @Bean
