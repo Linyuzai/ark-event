@@ -5,19 +5,27 @@ import com.github.linyuzai.arkevent.core.ArkEventSubscriber;
 
 public class SimpleArkEventPublishStrategyAdapter implements ArkEventPublishStrategy.Adapter {
 
-    private SimpleArkEventPublishStrategy simpleArkEventPublishStrategy;
+    private SimpleArkEventPublishStrategy publishStrategy;
 
     public SimpleArkEventPublishStrategyAdapter() {
         this(new SimpleArkEventPublishStrategy());
     }
 
-    public SimpleArkEventPublishStrategyAdapter(SimpleArkEventPublishStrategy simpleArkEventPublishStrategy) {
-        this.simpleArkEventPublishStrategy = simpleArkEventPublishStrategy;
+    public SimpleArkEventPublishStrategyAdapter(SimpleArkEventPublishStrategy publishStrategy) {
+        this.publishStrategy = publishStrategy;
+    }
+
+    public SimpleArkEventPublishStrategy getPublishStrategy() {
+        return publishStrategy;
+    }
+
+    public void setPublishStrategy(SimpleArkEventPublishStrategy publishStrategy) {
+        this.publishStrategy = publishStrategy;
     }
 
     @Override
     public ArkEventPublishStrategy adapt(ArkEventSubscriber subscriber) {
-        return simpleArkEventPublishStrategy;
+        return publishStrategy;
     }
 
     @Override

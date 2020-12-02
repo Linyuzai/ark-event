@@ -7,20 +7,28 @@ import com.github.linyuzai.arkevent.transaction.EventTransaction;
 
 public class TransactionArkEventPublishStrategyAdapter implements ArkEventPublishStrategy.Adapter {
 
-    private TransactionArkEventPublishStrategy transactionArkEventPublishStrategy;
+    private TransactionArkEventPublishStrategy publishStrategy;
 
     public TransactionArkEventPublishStrategyAdapter(ArkEventTransactionManager transactionManager) {
         this(new TransactionArkEventPublishStrategy(transactionManager));
     }
 
-    public TransactionArkEventPublishStrategyAdapter(TransactionArkEventPublishStrategy transactionArkEventPublishStrategy) {
-        this.transactionArkEventPublishStrategy = transactionArkEventPublishStrategy;
+    public TransactionArkEventPublishStrategyAdapter(TransactionArkEventPublishStrategy publishStrategy) {
+        this.publishStrategy = publishStrategy;
+    }
+
+    public TransactionArkEventPublishStrategy getPublishStrategy() {
+        return publishStrategy;
+    }
+
+    public void setPublishStrategy(TransactionArkEventPublishStrategy publishStrategy) {
+        this.publishStrategy = publishStrategy;
     }
 
     @Override
     public ArkEventPublishStrategy adapt(ArkEventSubscriber subscriber) {
         if (subscriber.getClass().isAnnotationPresent(EventTransaction.class)) {
-            return transactionArkEventPublishStrategy;
+            return publishStrategy;
         }
         return null;
     }

@@ -16,6 +16,14 @@ public class TransactionArkEventPublishStrategy implements ArkEventPublishStrate
         this.transactionManager = transactionManager;
     }
 
+    public ArkEventTransactionManager getTransactionManager() {
+        return transactionManager;
+    }
+
+    public void setTransactionManager(ArkEventTransactionManager transactionManager) {
+        this.transactionManager = transactionManager;
+    }
+
     @Override
     public void execute(ArkEventSubscriber subscriber, ArkEventExceptionHandler handler, ArkEvent event, Object... args) {
         try {

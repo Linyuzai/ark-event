@@ -30,6 +30,9 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @AutoConfigureAfter(ArkEventTransactionAutoConfiguration.class)
 @ConditionalOnClass(MqEvent.class)
 public class ArkMqEventAutoConfiguration {
@@ -51,7 +54,10 @@ public class ArkMqEventAutoConfiguration {
     @ConditionalOnMissingBean(RabbitArkMqEventQueue.class)
     public RabbitArkMqEventQueue rabbitArkMqEventQueue(ArkMqEventProperties arkMqEventProperties,
                                                        ArkMqEventModuleIdProvider idProvider) {
-        return new RabbitArkMqEventQueue(arkMqEventProperties.getQueuePrefix() + idProvider.getModuleId().toUpperCase());
+        Map<String, Object> args = new HashMap<>();
+        args.put("x-queue-type", "classic");
+        return new RabbitArkMqEventQueue(arkMqEventProperties.getQueuePrefix() + idProvider.getModuleId().toUpperCase(),
+                true, false, false, args);
     }
 
     @Bean

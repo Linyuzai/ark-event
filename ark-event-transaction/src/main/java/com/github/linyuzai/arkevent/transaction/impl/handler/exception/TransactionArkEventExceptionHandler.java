@@ -10,14 +10,22 @@ public abstract class TransactionArkEventExceptionHandler implements ArkEventExc
 
     private static Logger log = LoggerFactory.getLogger(TransactionArkEventExceptionHandler.class);
 
-    private ArkEventExceptionHandler loggerHandler;
+    private ArkEventExceptionHandler loggerExceptionHandler;
 
     public TransactionArkEventExceptionHandler() {
         this(new Slf4jArkEventExceptionHandler(log));
     }
 
-    public TransactionArkEventExceptionHandler(ArkEventExceptionHandler loggerHandler) {
-        this.loggerHandler = loggerHandler;
+    public TransactionArkEventExceptionHandler(ArkEventExceptionHandler loggerExceptionHandler) {
+        this.loggerExceptionHandler = loggerExceptionHandler;
+    }
+
+    public ArkEventExceptionHandler getLoggerExceptionHandler() {
+        return loggerExceptionHandler;
+    }
+
+    public void setLoggerExceptionHandler(ArkEventExceptionHandler loggerExceptionHandler) {
+        this.loggerExceptionHandler = loggerExceptionHandler;
     }
 
     @Override
@@ -25,7 +33,7 @@ public abstract class TransactionArkEventExceptionHandler implements ArkEventExc
         try {
             handleTransactionException(ex);
         } catch (Throwable e) {
-            loggerHandler.handle(ex);
+            loggerExceptionHandler.handle(ex);
         }
     }
 

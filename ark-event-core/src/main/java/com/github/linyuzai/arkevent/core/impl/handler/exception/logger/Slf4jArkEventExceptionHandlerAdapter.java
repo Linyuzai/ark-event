@@ -5,12 +5,27 @@ import com.github.linyuzai.arkevent.core.ArkEventSubscriber;
 
 public class Slf4jArkEventExceptionHandlerAdapter implements ArkEventExceptionHandler.Adapter {
 
-    private Slf4jArkEventExceptionHandler handler = new Slf4jArkEventExceptionHandler();
+    private Slf4jArkEventExceptionHandler exceptionHandler;
+
+    public Slf4jArkEventExceptionHandlerAdapter() {
+        this(new Slf4jArkEventExceptionHandler());
+    }
+
+    public Slf4jArkEventExceptionHandlerAdapter(Slf4jArkEventExceptionHandler exceptionHandler) {
+        this.exceptionHandler = exceptionHandler;
+    }
+
+    public Slf4jArkEventExceptionHandler getExceptionHandler() {
+        return exceptionHandler;
+    }
+
+    public void setExceptionHandler(Slf4jArkEventExceptionHandler exceptionHandler) {
+        this.exceptionHandler = exceptionHandler;
+    }
 
     @Override
     public ArkEventExceptionHandler adapt(ArkEventSubscriber subscriber) {
-        return handler;
-        //TransactionSynchronizationManager.isActualTransactionActive()
+        return exceptionHandler;
     }
 
     @Override

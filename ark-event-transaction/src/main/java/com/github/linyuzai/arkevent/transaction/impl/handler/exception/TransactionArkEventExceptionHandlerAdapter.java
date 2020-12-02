@@ -6,16 +6,24 @@ import com.github.linyuzai.arkevent.transaction.EventTransaction;
 
 public class TransactionArkEventExceptionHandlerAdapter implements ArkEventExceptionHandler.Adapter {
 
-    private TransactionArkEventExceptionHandler handler;
+    private TransactionArkEventExceptionHandler exceptionHandler;
 
-    public TransactionArkEventExceptionHandlerAdapter(TransactionArkEventExceptionHandler handler) {
-        this.handler = handler;
+    public TransactionArkEventExceptionHandlerAdapter(TransactionArkEventExceptionHandler exceptionHandler) {
+        this.exceptionHandler = exceptionHandler;
+    }
+
+    public TransactionArkEventExceptionHandler getExceptionHandler() {
+        return exceptionHandler;
+    }
+
+    public void setExceptionHandler(TransactionArkEventExceptionHandler exceptionHandler) {
+        this.exceptionHandler = exceptionHandler;
     }
 
     @Override
     public ArkEventExceptionHandler adapt(ArkEventSubscriber subscriber) {
         if (subscriber.getClass().isAnnotationPresent(EventTransaction.class)) {
-            return handler;
+            return exceptionHandler;
         }
         return null;
     }

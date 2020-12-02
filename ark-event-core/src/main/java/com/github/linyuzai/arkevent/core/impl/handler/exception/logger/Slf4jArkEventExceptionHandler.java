@@ -21,6 +21,10 @@ public class Slf4jArkEventExceptionHandler implements ArkEventExceptionHandler {
         this.logger = logger;
     }
 
+    public Logger getLogger() {
+        return logger;
+    }
+
     @Override
     public void handle(ArkEventException ex) {
         logger.error("Event: " + ex.getEvent() + ", " +

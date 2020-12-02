@@ -15,6 +15,22 @@ public class GroupArkEventConditionFilter implements ArkEventConditionFilter {
         this.requireGroupCondition = requireGroupCondition;
     }
 
+    public String[] getGroups() {
+        return groups;
+    }
+
+    public void setGroups(String[] groups) {
+        this.groups = groups;
+    }
+
+    public boolean isRequireGroupCondition() {
+        return requireGroupCondition;
+    }
+
+    public void setRequireGroupCondition(boolean requireGroupCondition) {
+        this.requireGroupCondition = requireGroupCondition;
+    }
+
     @Override
     public boolean filter(ArkEventSubscriber subscriber, ArkEvent event, Object... args) {
         EventGroup eventGroup = event.getClass().getAnnotation(EventGroup.class);

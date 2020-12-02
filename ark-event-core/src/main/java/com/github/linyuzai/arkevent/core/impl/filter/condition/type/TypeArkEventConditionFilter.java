@@ -15,6 +15,22 @@ public class TypeArkEventConditionFilter implements ArkEventConditionFilter {
         this.inherited = inherited;
     }
 
+    public Class<?>[] getClasses() {
+        return classes;
+    }
+
+    public void setClasses(Class<?>[] classes) {
+        this.classes = classes;
+    }
+
+    public boolean isInherited() {
+        return inherited;
+    }
+
+    public void setInherited(boolean inherited) {
+        this.inherited = inherited;
+    }
+
     @Override
     public boolean filter(ArkEventSubscriber subscriber, ArkEvent event, Object... args) {
         Class<?> target = event.getClass();
