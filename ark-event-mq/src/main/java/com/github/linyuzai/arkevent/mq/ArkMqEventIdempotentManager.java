@@ -2,7 +2,7 @@ package com.github.linyuzai.arkevent.mq;
 
 import com.github.linyuzai.arkevent.core.ArkEvent;
 
-public interface ArkMqEventIdempotentHandler {
+public interface ArkMqEventIdempotentManager {
 
     String getEventId(ArkEvent event, Object... args);
 

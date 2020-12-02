@@ -195,7 +195,7 @@ public class ArkEventDispatcherImpl implements ArkEventDispatcher {
             }
         }
         publishSorters.addAll(sorters);
-        publishSorters.sort(Comparator.comparingInt(Order::order));
+        publishSorters.sort(Comparator.comparing(Order::order, Comparator.reverseOrder()));
     }
 
     public void addPublishSorter(ArkEventPublishSorter sorter) {
@@ -203,7 +203,7 @@ public class ArkEventDispatcherImpl implements ArkEventDispatcher {
             throw new ArkEventException("ArkEventPublishSorter is null");
         }
         publishSorters.add(sorter);
-        publishSorters.sort(Comparator.comparingInt(Order::order));
+        publishSorters.sort(Comparator.comparing(Order::order, Comparator.reverseOrder()));
     }
 
     public List<ArkEventPublishSorter> getPublishSorters() {
@@ -282,14 +282,22 @@ public class ArkEventDispatcherImpl implements ArkEventDispatcher {
             publishListener.onPublishersCreated(publishers, event, args);
         }
 
-        if (!publishSorters.isEmpty()) {
+        for (ArkEventPublishSorter publishSorter : publishSorters) {
+            publishers.sort((o1, o2) -> {
+                boolean order1 = publishSorter.highOrder(o1.getStrategy(), o1.getSubscriber(), event, args);
+                boolean order2 = publishSorter.highOrder(o2.getStrategy(), o2.getSubscriber(), event, args);
+                return (order1 ? 0 : 1) - (order2 ? 0 : 1);
+            });
+        }
+
+        /*if (!publishSorters.isEmpty()) {
             Comparator<ArkEventPublisherImpl> comparator = null;
             for (int i = 0; i < publishSorters.size(); i++) {
                 ArkEventPublishSorter publishSorter = publishSorters.get(i);
                 Comparator<ArkEventPublisherImpl> c = (o1, o2) -> {
                     boolean order1 = publishSorter.highOrder(o1.getStrategy(), o1.getSubscriber(), event, args);
                     boolean order2 = publishSorter.highOrder(o2.getStrategy(), o2.getSubscriber(), event, args);
-                    return (order1 ? 1 : 0) - (order2 ? 1 : 0);
+                    return (order1 ? 0 : 1) - (order2 ? 0 : 1);
                 };
                 if (i == 0) {
                     comparator = c;
@@ -298,7 +306,7 @@ public class ArkEventDispatcherImpl implements ArkEventDispatcher {
                 }
             }
             publishers.sort(comparator);
-        }
+        }*/
 
         for (ArkEventPublishListener publishListener : publishListeners) {
             publishListener.onPublishersSorted(publishers, event, args);

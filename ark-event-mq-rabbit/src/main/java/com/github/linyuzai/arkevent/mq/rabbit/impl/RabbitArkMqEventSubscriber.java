@@ -17,9 +17,9 @@ public class RabbitArkMqEventSubscriber implements ArkEventSubscriber, ArkMqEven
 
     private RabbitArkMqEventRoutingKeyProvider routingKeyProvider;
 
-    private ArkMqEventIdempotentHandler idempotentHandler;
-
     private ArkEventTransactionManager transactionManager;
+
+    private ArkMqEventIdempotentManager idempotentManager;
 
     private ArkMqEventEncoder encoder;
 
@@ -47,20 +47,20 @@ public class RabbitArkMqEventSubscriber implements ArkEventSubscriber, ArkMqEven
         this.routingKeyProvider = routingKeyProvider;
     }
 
-    public ArkMqEventIdempotentHandler getIdempotentHandler() {
-        return idempotentHandler;
-    }
-
-    public void setIdempotentHandler(ArkMqEventIdempotentHandler idempotentHandler) {
-        this.idempotentHandler = idempotentHandler;
-    }
-
     public ArkEventTransactionManager getTransactionManager() {
         return transactionManager;
     }
 
     public void setTransactionManager(ArkEventTransactionManager transactionManager) {
         this.transactionManager = transactionManager;
+    }
+
+    public ArkMqEventIdempotentManager getIdempotentManager() {
+        return idempotentManager;
+    }
+
+    public void setIdempotentManager(ArkMqEventIdempotentManager idempotentManager) {
+        this.idempotentManager = idempotentManager;
     }
 
     public ArkMqEventEncoder getEncoder() {
@@ -85,7 +85,7 @@ public class RabbitArkMqEventSubscriber implements ArkEventSubscriber, ArkMqEven
     }
 
     private CorrelationData getCorrelationData(ArkEvent event, Object... args) {
-        String eventId = idempotentHandler.getEventId(event, args);
+        String eventId = idempotentManager.getEventId(event, args);
         return new CorrelationData(eventId);
     }
 }

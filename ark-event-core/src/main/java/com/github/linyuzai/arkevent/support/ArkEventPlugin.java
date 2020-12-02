@@ -25,7 +25,7 @@ public class ArkEventPlugin {
 
     public static boolean isFromRemote(Object... args) {
         long count = Arrays.stream(args).filter(it -> it instanceof FromRemote).count();
-        return count == 0;
+        return count > 0;
     }
 
     public interface FromRemote {

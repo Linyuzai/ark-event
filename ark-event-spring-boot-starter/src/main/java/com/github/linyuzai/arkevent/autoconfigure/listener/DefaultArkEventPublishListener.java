@@ -20,7 +20,7 @@ public class DefaultArkEventPublishListener implements ArkEventPublishListener {
 
     @Override
     public void onEachSubscriberConditionsFiltered(boolean filter, ArkEventSubscriber subscriber, List<? extends ArkEventConditionFilter> filters, ArkEvent event, Object... args) {
-        log.info("{} Subscriber {} which has conditions {} is {} matched for {} with args {}", TAG, subscriber, filters.toString(), filter ? "" : "not", event, Arrays.toString(args));
+        log.info("{} Subscriber {} which has conditions {} is {} for {} with args {}", TAG, subscriber, filters.toString(), filter ? "matched" : "not matched", event, Arrays.toString(args));
     }
 
     @Override

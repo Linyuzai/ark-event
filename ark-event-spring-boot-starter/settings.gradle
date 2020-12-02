@@ -1,1 +1,9 @@
 rootProject.name = 'ark-event-spring-boot-starter'
+include ':ark-event-core'
+project(':ark-event-core').projectDir = new File(settingsDir, '../ark-event-core')
+include ':ark-event-transaction'
+project(':ark-event-transaction').projectDir = new File(settingsDir, '../ark-event-transaction')
+include ':ark-event-mq'
+project(':ark-event-mq').projectDir = new File(settingsDir, '../ark-event-mq')
+include ':ark-event-mq-rabbit'
+project(':ark-event-mq-rabbit').projectDir = new File(settingsDir, '../ark-event-mq-rabbit')

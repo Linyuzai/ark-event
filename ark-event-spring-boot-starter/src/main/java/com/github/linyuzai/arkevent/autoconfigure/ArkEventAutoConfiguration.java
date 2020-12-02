@@ -58,12 +58,14 @@ public class ArkEventAutoConfiguration {
                                                      List<ArkEventPublishListener> publishListeners,
                                                      List<ArkEventConditionFilter.Factory> conditionFilterFactories,
                                                      List<ArkEventPublishStrategy.Adapter> publishStrategyAdapters,
-                                                     List<ArkEventExceptionHandler.Adapter> exceptionHandlerAdapters) {
+                                                     List<ArkEventExceptionHandler.Adapter> exceptionHandlerAdapters,
+                                                     List<ArkEventPublishSorter> publishSorters) {
         ArkEventDispatcherImpl dispatcher = new ArkEventDispatcherImpl();
+        dispatcher.addPublishListener(publishListeners);
         dispatcher.addConditionFilterFactory(conditionFilterFactories);
         dispatcher.addPublishStrategyAdapter(publishStrategyAdapters);
         dispatcher.addExceptionHandlerAdapter(exceptionHandlerAdapters);
-        dispatcher.addPublishListener(publishListeners);
+        dispatcher.addPublishSorter(publishSorters);
         dispatcher.registerSubscriber(subscribers);
         ArkEventPlugin.setDispatcher(dispatcher);
         return dispatcher;
