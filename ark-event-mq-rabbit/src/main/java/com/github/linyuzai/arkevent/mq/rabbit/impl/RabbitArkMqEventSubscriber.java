@@ -74,8 +74,6 @@ public class RabbitArkMqEventSubscriber implements ArkEventSubscriber, ArkMqEven
     @Override
     public void onSubscribe(ArkEvent event, Object... args) throws Throwable {
         if (transactionManager.isInTransaction(event, args)) {
-            //MessageProperties messageProperties = new MessageProperties();
-            //messageProperties.setExpiration();
             CorrelationData correlationData = getCorrelationData(event, args);
             template.convertSendAndReceive(exchange.getName(), routingKeyProvider.getRoutingKey(),
                     encoder.encode(event), correlationData);

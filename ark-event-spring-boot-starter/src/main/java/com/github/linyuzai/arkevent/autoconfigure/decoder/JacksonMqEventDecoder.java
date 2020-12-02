@@ -3,9 +3,9 @@ package com.github.linyuzai.arkevent.autoconfigure.decoder;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.linyuzai.arkevent.core.ArkEvent;
-import com.github.linyuzai.arkevent.mq.ArkMqEventDecoder;
+import com.github.linyuzai.arkevent.mq.rabbit.RabbitArkMqEventDecoder;
 
-public class JacksonMqEventDecoder implements ArkMqEventDecoder {
+public class JacksonMqEventDecoder extends RabbitArkMqEventDecoder {
 
     private ObjectMapper objectMapper;
 
@@ -18,8 +18,8 @@ public class JacksonMqEventDecoder implements ArkMqEventDecoder {
     }
 
     @Override
-    public ArkEvent decode(Object event) throws Throwable {
-        JsonNode node = objectMapper.readTree((String) event);
+    public ArkEvent decodeEvent(byte[] bytes) throws Throwable {
+        JsonNode node = objectMapper.readTree(new String(bytes));
         String className = node.get("className").asText();
         String content = node.get("content").toString();
         return (ArkEvent) objectMapper.readValue(content, Class.forName(className));
