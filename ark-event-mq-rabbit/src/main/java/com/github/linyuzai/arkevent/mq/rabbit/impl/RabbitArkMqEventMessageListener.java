@@ -62,16 +62,10 @@ public class RabbitArkMqEventMessageListener implements MessageListener {
             if (idempotentHandler.isEventHandled(eventId, decoder, message)) {
                 idempotentHandler.onEventRepeated(eventId, decoder, message);
             } else {
-                decoder.decode(new String(message.getBody())).publish(ArkEventPlugin.remoteArgs());
+                decoder.decode(message).publish(ArkEventPlugin.remoteArgs());
             }
         } catch (Throwable e) {
             exceptionHandler.handle(new ArkEventException(e));
         }
-    }
-
-    private Object[] getArgs(Object... args) {
-        List<Object> argList = new ArrayList<>(Arrays.asList(args));
-        argList.add(ArkEventPlugin.remoteArgs());
-        return argList.toArray();
     }
 }
