@@ -1,18 +1,17 @@
-package com.github.linyuzai.arkevent.autoconfigure;
+package com.github.linyuzai.arkevent.autoconfigure.configuration;
 
 import com.github.linyuzai.arkevent.autoconfigure.transaction.StringArkEventTransactionManager;
 import com.github.linyuzai.arkevent.core.*;
-import com.github.linyuzai.arkevent.transaction.EventTransaction;
 import com.github.linyuzai.arkevent.transaction.impl.handler.exception.TransactionArkEventExceptionHandler;
 import com.github.linyuzai.arkevent.transaction.impl.handler.exception.TransactionArkEventExceptionHandlerAdapter;
 import com.github.linyuzai.arkevent.transaction.impl.sorter.publish.TransactionArkEventPublishSorter;
 import com.github.linyuzai.arkevent.transaction.impl.strategy.publish.TransactionArkEventPublishStrategyAdapter;
 import com.github.linyuzai.arkevent.transaction.manager.ArkEventTransactionManager;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 
-@ConditionalOnClass(EventTransaction.class)
+@ConditionalOnProperty(name = "ark-event.transaction.enabled", havingValue = "true", matchIfMissing = true)
 public class ArkEventTransactionAutoConfiguration {
 
     @Bean

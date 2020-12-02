@@ -6,9 +6,10 @@ import java.lang.annotation.*;
 
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-@Import({ArkEventAutoConfiguration.class,
-        ArkEventTransactionAutoConfiguration.class,
-        ArkMqEventAutoConfiguration.class})
+@Import(ArkEventConfigurationSelector.class)
 public @interface EnableArkEvent {
 
+    boolean mq() default false;
+
+    boolean transaction() default false;
 }

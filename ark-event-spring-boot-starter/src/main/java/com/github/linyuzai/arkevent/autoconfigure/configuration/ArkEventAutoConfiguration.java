@@ -1,4 +1,4 @@
-package com.github.linyuzai.arkevent.autoconfigure;
+package com.github.linyuzai.arkevent.autoconfigure.configuration;
 
 import com.github.linyuzai.arkevent.autoconfigure.listener.DefaultArkEventPublishListener;
 import com.github.linyuzai.arkevent.core.*;
@@ -10,10 +10,12 @@ import com.github.linyuzai.arkevent.core.impl.handler.exception.logger.Slf4jArkE
 import com.github.linyuzai.arkevent.core.impl.handler.exception.rethrow.RethrowArkEventExceptionHandlerAdapter;
 import com.github.linyuzai.arkevent.core.impl.strategy.publish.SimpleArkEventPublishStrategyAdapter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 
 import java.util.List;
 
+@ConditionalOnProperty(name = "ark-event.enabled", havingValue = "true", matchIfMissing = true)
 public class ArkEventAutoConfiguration {
 
     @Bean
