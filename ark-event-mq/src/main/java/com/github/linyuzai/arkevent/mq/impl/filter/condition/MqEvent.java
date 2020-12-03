@@ -7,5 +7,5 @@ import java.lang.annotation.*;
 @Inherited
 public @interface MqEvent {
 
-    long expiration() default -1;
+    boolean transaction() default false;
 }

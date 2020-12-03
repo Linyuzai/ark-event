@@ -141,14 +141,12 @@ public class ArkMqEventAutoConfiguration {
             RabbitTemplate template,
             RabbitArkMqEventTopicExchange exchange,
             RabbitArkMqEventRoutingKeyProvider routingKeyProvider,
-            ArkEventTransactionManager transactionManager,
             ArkMqEventIdempotentManager idempotentManager,
             ArkMqEventEncoder encoder) {
         RabbitArkMqEventSubscriber subscriber = new RabbitArkMqEventSubscriber();
         subscriber.setTemplate(template);
         subscriber.setExchange(exchange);
         subscriber.setRoutingKeyProvider(routingKeyProvider);
-        subscriber.setTransactionManager(transactionManager);
         subscriber.setIdempotentManager(idempotentManager);
         subscriber.setEncoder(encoder);
         return subscriber;

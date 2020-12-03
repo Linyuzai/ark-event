@@ -5,6 +5,7 @@ import com.github.linyuzai.arkevent.core.ArkEventSubscriber;
 import com.github.linyuzai.arkevent.mq.*;
 import com.github.linyuzai.arkevent.mq.rabbit.RabbitArkMqEventRoutingKeyProvider;
 import com.github.linyuzai.arkevent.mq.rabbit.RabbitArkMqEventTopicExchange;
+import com.github.linyuzai.arkevent.support.ArkEventPlugin;
 import com.github.linyuzai.arkevent.transaction.manager.ArkEventTransactionManager;
 import org.springframework.amqp.rabbit.connection.CorrelationData;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -16,8 +17,6 @@ public class RabbitArkMqEventSubscriber implements ArkEventSubscriber, ArkMqEven
     private RabbitArkMqEventTopicExchange exchange;
 
     private RabbitArkMqEventRoutingKeyProvider routingKeyProvider;
-
-    private ArkEventTransactionManager transactionManager;
 
     private ArkMqEventIdempotentManager idempotentManager;
 
@@ -47,13 +46,6 @@ public class RabbitArkMqEventSubscriber implements ArkEventSubscriber, ArkMqEven
         this.routingKeyProvider = routingKeyProvider;
     }
 
-    public ArkEventTransactionManager getTransactionManager() {
-        return transactionManager;
-    }
-
-    public void setTransactionManager(ArkEventTransactionManager transactionManager) {
-        this.transactionManager = transactionManager;
-    }
 
     public ArkMqEventIdempotentManager getIdempotentManager() {
         return idempotentManager;
@@ -73,7 +65,7 @@ public class RabbitArkMqEventSubscriber implements ArkEventSubscriber, ArkMqEven
 
     @Override
     public void onSubscribe(ArkEvent event, Object... args) throws Throwable {
-        if (transactionManager.isInTransaction(event, args)) {
+        if (ArkEventPlugin.isMqTransaction(args)) {
             CorrelationData correlationData = getCorrelationData(event, args);
             template.convertSendAndReceive(exchange.getName(), routingKeyProvider.getRoutingKey(),
                     encoder.encode(event), correlationData);
