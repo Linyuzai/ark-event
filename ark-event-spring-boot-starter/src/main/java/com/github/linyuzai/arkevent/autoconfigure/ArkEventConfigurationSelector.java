@@ -23,6 +23,9 @@ public class ArkEventConfigurationSelector implements ImportSelector {
             names.add(ArkEventAutoConfiguration.class.getName());
             if (mq) {
                 names.add(ArkMqEventAutoConfiguration.class.getName());
+                if (!transaction) {
+                    names.add(ArkMqEventAutoConfiguration.TransactionAutoConfiguration.class.getName());
+                }
             }
             if (transaction) {
                 names.add(ArkEventTransactionAutoConfiguration.class.getName());

@@ -14,27 +14,29 @@ import com.github.linyuzai.arkevent.mq.properties.ArkMqEventProperties;
 import com.github.linyuzai.arkevent.mq.rabbit.RabbitArkMqEventQueue;
 import com.github.linyuzai.arkevent.mq.rabbit.RabbitArkMqEventRoutingKeyProvider;
 import com.github.linyuzai.arkevent.mq.rabbit.RabbitArkMqEventTopicExchange;
-import com.github.linyuzai.arkevent.mq.rabbit.impl.ApplicationNameArkMqEventModuleIdProvider;
-import com.github.linyuzai.arkevent.mq.rabbit.impl.DefaultRabbitArkMqEventRoutingKeyProvider;
-import com.github.linyuzai.arkevent.mq.rabbit.impl.RabbitArkMqEventMessageListener;
-import com.github.linyuzai.arkevent.mq.rabbit.impl.RabbitArkMqEventSubscriber;
+import com.github.linyuzai.arkevent.mq.rabbit.impl.*;
 import com.github.linyuzai.arkevent.transaction.manager.ArkEventTransactionManager;
 import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 
 import java.util.HashMap;
 import java.util.Map;
 
-@ConditionalOnProperty(name = "ark-event.mq.enabled", havingValue = "true", matchIfMissing = true)
 public class ArkMqEventAutoConfiguration {
+
+    public static class TransactionAutoConfiguration {
+
+        @Bean
+        @ConditionalOnMissingBean(ArkEventTransactionManager.class)
+        public ArkEventTransactionManager arkEventTransactionManager() {
+            return ArkEventTransactionManager.NO_TRANSACTION;
+        }
+    }
 
     @Bean
     @ConditionalOnMissingBean(ArkMqEventProperties.class)
@@ -110,16 +112,9 @@ public class ArkMqEventAutoConfiguration {
     }
 
     @Bean
-    @ConditionalOnBean(ArkEventTransactionManager.class)
     @ConditionalOnMissingBean(ArkMqEventPublishStrategyAdapter.class)
     public ArkMqEventPublishStrategyAdapter arkMqEventPublishStrategyAdapter(ArkEventTransactionManager transactionManager) {
         return new ArkMqEventPublishStrategyAdapter(transactionManager);
-    }
-
-    @Bean
-    @ConditionalOnMissingBean({ArkMqEventPublishStrategyAdapter.class, ArkEventTransactionManager.class})
-    public ArkMqEventPublishStrategyAdapter arkMqEventPublishStrategyAdapter() {
-        return new ArkMqEventPublishStrategyAdapter(ArkEventTransactionManager.NO_TRANSACTION);
     }
 
     @Bean
@@ -141,7 +136,6 @@ public class ArkMqEventAutoConfiguration {
     }
 
     @Bean
-    @ConditionalOnBean(ArkEventTransactionManager.class)
     @ConditionalOnMissingBean(ArkMqEventSubscriber.class)
     public RabbitArkMqEventSubscriber arkMqEventSubscriber(
             RabbitTemplate template,
@@ -158,18 +152,6 @@ public class ArkMqEventAutoConfiguration {
         subscriber.setIdempotentManager(idempotentManager);
         subscriber.setEncoder(encoder);
         return subscriber;
-    }
-
-    @Bean
-    @ConditionalOnMissingBean({ArkMqEventSubscriber.class, ArkEventTransactionManager.class})
-    public RabbitArkMqEventSubscriber arkMqEventSubscriber(
-            RabbitTemplate template,
-            RabbitArkMqEventTopicExchange exchange,
-            RabbitArkMqEventRoutingKeyProvider routingKeyProvider,
-            ArkMqEventIdempotentManager idempotentManager,
-            ArkMqEventEncoder encoder) {
-        return arkMqEventSubscriber(template, exchange, routingKeyProvider,
-                ArkEventTransactionManager.NO_TRANSACTION, idempotentManager, encoder);
     }
 
     @Bean
@@ -195,7 +177,6 @@ public class ArkMqEventAutoConfiguration {
     }
 
     @Bean
-    @ConditionalOnBean(ArkEventTransactionManager.class)
     @ConditionalOnMissingBean(RabbitArkMqEventMessageListener.class)
     public RabbitArkMqEventMessageListener rabbitArkMqEventMessageListener(ArkMqEventIdempotentManager idempotentManager,
                                                                            ArkEventTransactionManager transactionManager,
@@ -210,24 +191,12 @@ public class ArkMqEventAutoConfiguration {
     }
 
     @Bean
-    @ConditionalOnMissingBean({RabbitArkMqEventMessageListener.class, ArkEventTransactionManager.class})
-    public RabbitArkMqEventMessageListener rabbitArkMqEventMessageListener(ArkMqEventIdempotentManager idempotentManager,
-                                                                           ArkMqEventDecoder decoder,
-                                                                           ArkMqEventExceptionHandler exceptionHandler) {
-        RabbitArkMqEventMessageListener listener = new RabbitArkMqEventMessageListener();
-        listener.setTransactionManager(ArkEventTransactionManager.NO_TRANSACTION);
-        listener.setIdempotentManager(idempotentManager);
-        listener.setDecoder(decoder);
-        listener.setExceptionHandler(exceptionHandler);
-        return listener;
-    }
-
-    @Bean
-    public SimpleMessageListenerContainer rabbitArkEventMessageListenerContainer(
+    @ConditionalOnMissingBean(RabbitArkMqEventMessageListenerContainer.class)
+    public RabbitArkMqEventMessageListenerContainer rabbitArkMqEventMessageListenerContainer(
             RabbitArkMqEventQueue rabbitArkMqEventQueue,
             RabbitArkMqEventMessageListener listener,
             ConnectionFactory connectionFactory) {
-        SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
+        RabbitArkMqEventMessageListenerContainer container = new RabbitArkMqEventMessageListenerContainer();
         container.setConnectionFactory(connectionFactory);
         container.setQueueNames(rabbitArkMqEventQueue.getName());
         container.setMessageListener(listener);

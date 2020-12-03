@@ -4,7 +4,7 @@ public class ArkMqEventProperties {
 
     private String exchangeName = "Exchange@ArkEvent.Topic";
 
-    private String queuePrefix;
+    private String queuePrefix = "Queue@ArkEvent.";
 
     public String getExchangeName() {
         return exchangeName;
