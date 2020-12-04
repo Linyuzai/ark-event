@@ -4,12 +4,14 @@ import com.github.linyuzai.arkevent.core.ArkEvent;
 import com.github.linyuzai.arkevent.mq.ArkMqEventDecoder;
 import com.github.linyuzai.arkevent.mq.ArkMqEventIdempotentManager;
 
+import java.util.Map;
+
 public abstract class AnnotationArkMqEventIdempotentManager implements ArkMqEventIdempotentManager {
 
     public static final String EVENT_IDEMPOTENT_IGNORED = "ArkMqEvent@IdempotentIgnored";
 
     @Override
-    public String getEventId(ArkEvent event, Object... args) {
+    public String getEventId(ArkEvent event, Map<Object, Object> args) {
         if (event.getClass().isAnnotationPresent(EventIdempotent.class)) {
             return getIdempotentEventId(event, args);
         }

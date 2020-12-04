@@ -4,6 +4,8 @@ import com.github.linyuzai.arkevent.core.ArkEvent;
 import com.github.linyuzai.arkevent.core.ArkEventConditionFilter;
 import com.github.linyuzai.arkevent.core.ArkEventSubscriber;
 
+import java.util.Map;
+
 public class TypeArkEventConditionFilter implements ArkEventConditionFilter {
 
     private Class<?>[] classes;
@@ -32,7 +34,7 @@ public class TypeArkEventConditionFilter implements ArkEventConditionFilter {
     }
 
     @Override
-    public boolean filter(ArkEventSubscriber subscriber, ArkEvent event, Object... args) {
+    public boolean filter(ArkEventSubscriber subscriber, ArkEvent event, Map<Object, Object> args) {
         Class<?> target = event.getClass();
         if (inherited) {
             for (Class<?> c : classes) {

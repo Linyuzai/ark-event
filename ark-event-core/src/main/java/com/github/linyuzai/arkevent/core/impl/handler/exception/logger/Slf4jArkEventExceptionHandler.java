@@ -28,7 +28,7 @@ public class Slf4jArkEventExceptionHandler implements ArkEventExceptionHandler {
     @Override
     public void handle(ArkEventException ex) {
         logger.error("Event: " + ex.getEvent() + ", " +
-                "Args: " + Arrays.toString(ex.getArgs()) + ", " +
+                "Args: " + ex.getArgs() + ", " +
                 "Subscriber: " + ex.getSubscriber() + ", " +
                 "Strategy: " + ex.getStrategy(), ex);
     }

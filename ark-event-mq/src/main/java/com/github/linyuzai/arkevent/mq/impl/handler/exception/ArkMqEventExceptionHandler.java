@@ -3,6 +3,7 @@ package com.github.linyuzai.arkevent.mq.impl.handler.exception;
 import com.github.linyuzai.arkevent.core.ArkEventException;
 import com.github.linyuzai.arkevent.core.ArkEventExceptionHandler;
 import com.github.linyuzai.arkevent.core.impl.handler.exception.logger.Slf4jArkEventExceptionHandler;
+import com.github.linyuzai.arkevent.support.ArkEventPlugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,14 +23,14 @@ public class ArkMqEventExceptionHandler implements ArkEventExceptionHandler {
 
     @Override
     public void handle(ArkEventException ex) {
-        try {
+        if (ArkEventPlugin.isMqTransaction(ex.getArgs())) {
+            throw ex;
+        } else {
             handleMqException(ex);
-        } catch (Throwable e) {
-            loggerHandler.handle(ex);
         }
     }
 
-    public void handleMqException(ArkEventException ex) throws Throwable {
+    public void handleMqException(ArkEventException ex) {
         loggerHandler.handle(ex);
     }
 }

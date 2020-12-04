@@ -20,19 +20,14 @@ public class ArkEventTransactionAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(TransactionArkEventPublishStrategyAdapter.class)
-    public TransactionArkEventPublishStrategyAdapter transactionArkEventPublishStrategyAdapter(ArkEventTransactionManager transactionManager) {
-        return new TransactionArkEventPublishStrategyAdapter(transactionManager);
+    public TransactionArkEventPublishStrategyAdapter transactionArkEventPublishStrategyAdapter() {
+        return new TransactionArkEventPublishStrategyAdapter();
     }
 
     @Bean
     @ConditionalOnMissingBean(TransactionArkEventExceptionHandler.class)
-    public TransactionArkEventExceptionHandler transactionArkEventExceptionHandler() {
-        return new TransactionArkEventExceptionHandler() {
-            @Override
-            public void handleTransactionException(ArkEventException ex) throws Throwable {
-
-            }
-        };
+    public TransactionArkEventExceptionHandler transactionArkEventExceptionHandler(ArkEventTransactionManager transactionManager) {
+        return new TransactionArkEventExceptionHandler(transactionManager);
     }
 
     @Bean

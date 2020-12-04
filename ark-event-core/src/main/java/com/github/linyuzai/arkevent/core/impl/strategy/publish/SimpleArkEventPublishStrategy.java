@@ -6,14 +6,12 @@ import com.github.linyuzai.arkevent.core.ArkEventSubscriber;
 import com.github.linyuzai.arkevent.core.ArkEventExceptionHandler;
 import com.github.linyuzai.arkevent.core.ArkEventException;
 
+import java.util.Map;
+
 public class SimpleArkEventPublishStrategy implements ArkEventPublishStrategy {
 
     @Override
-    public void execute(ArkEventSubscriber subscriber, ArkEventExceptionHandler handler, ArkEvent event, Object... args) {
-        try {
-            subscriber.onSubscribe(event, args);
-        } catch (Throwable e) {
-            handler.handle(new ArkEventException(e, subscriber, this, event, args));
-        }
+    public void implement(ArkEventSubscriber subscriber, ArkEvent event, Map<Object, Object> args) throws Throwable {
+        subscriber.onSubscribe(event, args);
     }
 }

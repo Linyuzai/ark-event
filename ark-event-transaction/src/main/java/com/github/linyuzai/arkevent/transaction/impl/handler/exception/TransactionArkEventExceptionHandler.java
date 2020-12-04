@@ -3,21 +3,35 @@ package com.github.linyuzai.arkevent.transaction.impl.handler.exception;
 import com.github.linyuzai.arkevent.core.ArkEventExceptionHandler;
 import com.github.linyuzai.arkevent.core.ArkEventException;
 import com.github.linyuzai.arkevent.core.impl.handler.exception.logger.Slf4jArkEventExceptionHandler;
+import com.github.linyuzai.arkevent.support.ArkEventPlugin;
+import com.github.linyuzai.arkevent.transaction.manager.ArkEventTransactionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class TransactionArkEventExceptionHandler implements ArkEventExceptionHandler {
+public class TransactionArkEventExceptionHandler implements ArkEventExceptionHandler {
 
     private static Logger log = LoggerFactory.getLogger(TransactionArkEventExceptionHandler.class);
 
+    private ArkEventTransactionManager transactionManager;
+
     private ArkEventExceptionHandler loggerExceptionHandler;
 
-    public TransactionArkEventExceptionHandler() {
-        this(new Slf4jArkEventExceptionHandler(log));
+    public TransactionArkEventExceptionHandler(ArkEventTransactionManager transactionManager) {
+        this(transactionManager, new Slf4jArkEventExceptionHandler(log));
     }
 
-    public TransactionArkEventExceptionHandler(ArkEventExceptionHandler loggerExceptionHandler) {
+    public TransactionArkEventExceptionHandler(ArkEventTransactionManager transactionManager,
+                                               ArkEventExceptionHandler loggerExceptionHandler) {
+        this.transactionManager = transactionManager;
         this.loggerExceptionHandler = loggerExceptionHandler;
+    }
+
+    public ArkEventTransactionManager getTransactionManager() {
+        return transactionManager;
+    }
+
+    public void setTransactionManager(ArkEventTransactionManager transactionManager) {
+        this.transactionManager = transactionManager;
     }
 
     public ArkEventExceptionHandler getLoggerExceptionHandler() {
@@ -30,12 +44,18 @@ public abstract class TransactionArkEventExceptionHandler implements ArkEventExc
 
     @Override
     public void handle(ArkEventException ex) {
-        try {
+        if (ArkEventPlugin.isRemote(ex.getArgs())) {
             handleTransactionException(ex);
-        } catch (Throwable e) {
-            loggerExceptionHandler.handle(ex);
+        } else {
+            if (transactionManager.isInTransaction(ex.getEvent(), ex.getArgs())) {
+                throw ex;
+            } else {
+                handleTransactionException(ex);
+            }
         }
     }
 
-    public abstract void handleTransactionException(ArkEventException ex) throws Throwable;
+    public void handleTransactionException(ArkEventException ex) {
+        loggerExceptionHandler.handle(ex);
+    }
 }

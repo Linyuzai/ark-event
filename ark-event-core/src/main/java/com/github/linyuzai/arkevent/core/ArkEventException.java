@@ -1,13 +1,16 @@
 package com.github.linyuzai.arkevent.core;
 
+import java.util.Map;
+
 public class ArkEventException extends RuntimeException {
 
     private ArkEventSubscriber subscriber;
     private ArkEventPublishStrategy strategy;
     private ArkEvent event;
-    private Object[] args;
+    private Map<Object, Object> args;
 
-    public ArkEventException(Throwable cause, ArkEventSubscriber subscriber, ArkEventPublishStrategy strategy, ArkEvent event, Object... args) {
+    public ArkEventException(Throwable cause, ArkEventSubscriber subscriber, ArkEventPublishStrategy strategy,
+                             ArkEvent event, Map<Object, Object> args) {
         super(cause);
         this.subscriber = subscriber;
         this.strategy = strategy;
@@ -58,11 +61,11 @@ public class ArkEventException extends RuntimeException {
         return event;
     }
 
-    public void setArgs(Object... args) {
+    public void setArgs(Map<Object, Object> args) {
         this.args = args;
     }
 
-    public Object[] getArgs() {
+    public Map<Object, Object> getArgs() {
         return args;
     }
 }

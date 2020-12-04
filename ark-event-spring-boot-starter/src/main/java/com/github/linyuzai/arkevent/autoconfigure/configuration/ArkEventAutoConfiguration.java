@@ -2,7 +2,7 @@ package com.github.linyuzai.arkevent.autoconfigure.configuration;
 
 import com.github.linyuzai.arkevent.autoconfigure.listener.DefaultArkEventPublishListener;
 import com.github.linyuzai.arkevent.core.*;
-import com.github.linyuzai.arkevent.core.impl.ArkEventDispatcherImpl;
+import com.github.linyuzai.arkevent.core.impl.DefaultArkEventPublisher;
 import com.github.linyuzai.arkevent.support.ArkEventPlugin;
 import com.github.linyuzai.arkevent.core.impl.filter.condition.group.GroupArkEventConditionFilterFactory;
 import com.github.linyuzai.arkevent.core.impl.filter.condition.type.TypeArkEventConditionFilterFactory;
@@ -53,21 +53,21 @@ public class ArkEventAutoConfiguration {
     }
 
     @Bean
-    @ConditionalOnMissingBean(ArkEventDispatcher.class)
-    public ArkEventDispatcherImpl arkEventDispatcher(List<ArkEventSubscriber> subscribers,
-                                                     List<ArkEventPublishListener> publishListeners,
-                                                     List<ArkEventConditionFilter.Factory> conditionFilterFactories,
-                                                     List<ArkEventPublishStrategy.Adapter> publishStrategyAdapters,
-                                                     List<ArkEventExceptionHandler.Adapter> exceptionHandlerAdapters,
-                                                     List<ArkEventPublishSorter> publishSorters) {
-        ArkEventDispatcherImpl dispatcher = new ArkEventDispatcherImpl();
-        dispatcher.addPublishListener(publishListeners);
-        dispatcher.addConditionFilterFactory(conditionFilterFactories);
-        dispatcher.addPublishStrategyAdapter(publishStrategyAdapters);
-        dispatcher.addExceptionHandlerAdapter(exceptionHandlerAdapters);
-        dispatcher.addPublishSorter(publishSorters);
-        dispatcher.registerSubscriber(subscribers);
-        ArkEventPlugin.setDispatcher(dispatcher);
-        return dispatcher;
+    @ConditionalOnMissingBean(ArkEventPublisher.class)
+    public DefaultArkEventPublisher defaultArkEventPublisher(List<ArkEventSubscriber> subscribers,
+                                                             List<ArkEventPublishListener> publishListeners,
+                                                             List<ArkEventConditionFilter.Factory> conditionFilterFactories,
+                                                             List<ArkEventPublishStrategy.Adapter> publishStrategyAdapters,
+                                                             List<ArkEventExceptionHandler.Adapter> exceptionHandlerAdapters,
+                                                             List<ArkEventPublishSorter> publishSorters) {
+        DefaultArkEventPublisher publisher = new DefaultArkEventPublisher();
+        publisher.addPublishListener(publishListeners);
+        publisher.addConditionFilterFactory(conditionFilterFactories);
+        publisher.addPublishStrategyAdapter(publishStrategyAdapters);
+        publisher.addExceptionHandlerAdapter(exceptionHandlerAdapters);
+        publisher.addPublishSorter(publishSorters);
+        publisher.registerSubscriber(subscribers);
+        ArkEventPlugin.setPublisher(publisher);
+        return publisher;
     }
 }

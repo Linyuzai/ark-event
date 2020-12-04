@@ -2,9 +2,11 @@ package com.github.linyuzai.arkevent.core;
 
 import com.github.linyuzai.arkevent.support.Order;
 
+import java.util.Map;
+
 public interface ArkEventPublishStrategy {
 
-    void execute(ArkEventSubscriber subscriber, ArkEventExceptionHandler handler, ArkEvent event, Object... args);
+    void implement(ArkEventSubscriber subscriber, ArkEvent event, Map<Object, Object> args) throws Throwable;
 
     interface Adapter extends Order {
 

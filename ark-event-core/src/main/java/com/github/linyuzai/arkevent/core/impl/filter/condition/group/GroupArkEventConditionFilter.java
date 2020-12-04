@@ -4,6 +4,8 @@ import com.github.linyuzai.arkevent.core.ArkEvent;
 import com.github.linyuzai.arkevent.core.ArkEventConditionFilter;
 import com.github.linyuzai.arkevent.core.ArkEventSubscriber;
 
+import java.util.Map;
+
 public class GroupArkEventConditionFilter implements ArkEventConditionFilter {
 
     private String[] groups;
@@ -32,7 +34,7 @@ public class GroupArkEventConditionFilter implements ArkEventConditionFilter {
     }
 
     @Override
-    public boolean filter(ArkEventSubscriber subscriber, ArkEvent event, Object... args) {
+    public boolean filter(ArkEventSubscriber subscriber, ArkEvent event, Map<Object, Object> args) {
         EventGroup eventGroup = event.getClass().getAnnotation(EventGroup.class);
         if (eventGroup == null) {
             return !requireGroupCondition;

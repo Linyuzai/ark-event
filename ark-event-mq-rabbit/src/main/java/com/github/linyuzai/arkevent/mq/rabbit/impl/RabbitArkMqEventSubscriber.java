@@ -6,9 +6,10 @@ import com.github.linyuzai.arkevent.mq.*;
 import com.github.linyuzai.arkevent.mq.rabbit.RabbitArkMqEventRoutingKeyProvider;
 import com.github.linyuzai.arkevent.mq.rabbit.RabbitArkMqEventTopicExchange;
 import com.github.linyuzai.arkevent.support.ArkEventPlugin;
-import com.github.linyuzai.arkevent.transaction.manager.ArkEventTransactionManager;
 import org.springframework.amqp.rabbit.connection.CorrelationData;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+
+import java.util.Map;
 
 public class RabbitArkMqEventSubscriber implements ArkEventSubscriber, ArkMqEventSubscriber {
 
@@ -64,7 +65,7 @@ public class RabbitArkMqEventSubscriber implements ArkEventSubscriber, ArkMqEven
     }
 
     @Override
-    public void onSubscribe(ArkEvent event, Object... args) throws Throwable {
+    public void onSubscribe(ArkEvent event, Map<Object, Object> args) throws Throwable {
         if (ArkEventPlugin.isMqTransaction(args)) {
             CorrelationData correlationData = getCorrelationData(event, args);
             template.convertSendAndReceive(exchange.getName(), routingKeyProvider.getRoutingKey(),
@@ -76,7 +77,7 @@ public class RabbitArkMqEventSubscriber implements ArkEventSubscriber, ArkMqEven
         }
     }
 
-    private CorrelationData getCorrelationData(ArkEvent event, Object... args) {
+    private CorrelationData getCorrelationData(ArkEvent event, Map<Object, Object> args) {
         String eventId = idempotentManager.getEventId(event, args);
         return new CorrelationData(eventId);
     }

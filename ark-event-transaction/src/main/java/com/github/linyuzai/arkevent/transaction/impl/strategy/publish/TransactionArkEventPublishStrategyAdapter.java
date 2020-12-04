@@ -9,8 +9,8 @@ public class TransactionArkEventPublishStrategyAdapter implements ArkEventPublis
 
     private TransactionArkEventPublishStrategy publishStrategy;
 
-    public TransactionArkEventPublishStrategyAdapter(ArkEventTransactionManager transactionManager) {
-        this(new TransactionArkEventPublishStrategy(transactionManager));
+    public TransactionArkEventPublishStrategyAdapter() {
+        this(new TransactionArkEventPublishStrategy());
     }
 
     public TransactionArkEventPublishStrategyAdapter(TransactionArkEventPublishStrategy publishStrategy) {

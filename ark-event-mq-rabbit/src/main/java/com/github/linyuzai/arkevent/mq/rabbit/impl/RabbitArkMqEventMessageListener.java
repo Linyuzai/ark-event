@@ -9,6 +9,9 @@ import com.github.linyuzai.arkevent.transaction.manager.ArkEventTransactionManag
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessageListener;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class RabbitArkMqEventMessageListener implements MessageListener {
 
     private ArkEventTransactionManager transactionManager;
@@ -58,7 +61,9 @@ public class RabbitArkMqEventMessageListener implements MessageListener {
             if (idempotentManager.isEventHandled(eventId, decoder, message)) {
                 idempotentManager.onEventRepeated(eventId, decoder, message);
             } else {
-                decoder.decode(message).publish(ArkEventPlugin.remoteArgs());
+                Map<Object, Object> args = new HashMap<>();
+                args.put(ArkEventPlugin.ARGS_REMOTE_KEY, "mq");
+                decoder.decode(message).publish(args);
             }
         } catch (Throwable e) {
             exceptionHandler.handle(new ArkEventException(e));

@@ -7,8 +7,9 @@ import com.github.linyuzai.arkevent.support.Order;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.stream.Collectors;
 
-public class ArkEventDispatcherImpl implements ArkEventDispatcher {
+public class DefaultArkEventPublisher implements ArkEventPublisher {
 
     private Map<ArkEventSubscriber, List<ArkEventConditionFilter>> subscriberConditionFilterMap = new ConcurrentHashMap<>();
 
@@ -231,39 +232,45 @@ public class ArkEventDispatcherImpl implements ArkEventDispatcher {
     }
 
     @Override
-    public void dispatch(ArkEvent event, Object... args) {
+    public void publish(ArkEvent event, Map<Object, Object> args) {
+
+        Map<Object, Object> nonNullArgs = new LinkedHashMap<>();
+        if (args != null) {
+            nonNullArgs.putAll(args);
+        }
+
         for (ArkEventPublishListener publishListener : publishListeners) {
-            publishListener.onPublishStarted(event, args);
+            publishListener.onPublishStarted(event, nonNullArgs);
         }
 
         List<ArkEventSubscriber> filterSubscribers = new ArrayList<>();
         for (ArkEventSubscriber subscriber : subscribers) {
             List<ArkEventConditionFilter> filters = subscriberConditionFilterMap.getOrDefault(subscriber, Collections.emptyList());
-            if (filterSubscriber(filters, subscriber, event, args)) {
+            if (filterSubscriber(filters, subscriber, event, nonNullArgs)) {
                 filterSubscribers.add(subscriber);
                 for (ArkEventPublishListener publishListener : publishListeners) {
-                    publishListener.onEachSubscriberConditionsFiltered(true, subscriber, filters, event, args);
+                    publishListener.onEachSubscriberConditionsFiltered(true, subscriber, filters, event, nonNullArgs);
                 }
             } else {
                 for (ArkEventPublishListener publishListener : publishListeners) {
-                    publishListener.onEachSubscriberConditionsFiltered(false, subscriber, filters, event, args);
+                    publishListener.onEachSubscriberConditionsFiltered(false, subscriber, filters, event, nonNullArgs);
                 }
             }
         }
 
         for (ArkEventPublishListener publishListener : publishListeners) {
-            publishListener.onSubscribersFiltered(filterSubscribers, event, args);
+            publishListener.onSubscribersFiltered(filterSubscribers, event, nonNullArgs);
         }
 
-        List<ArkEventPublisherImpl> publishers = new ArrayList<>();
+        List<PublishExecutor> executors = new ArrayList<>();
         for (ArkEventSubscriber filterSubscriber : filterSubscribers) {
             ArkEventPublishStrategy strategy = subscriberPublishStrategyMap.get(filterSubscriber);
             if (strategy == null) {
-                throw new ArkEventException("No execute strategy found for " + filterSubscriber);
+                throw new ArkEventException("No publish strategy found for " + filterSubscriber);
             }
 
             for (ArkEventPublishListener publishListener : publishListeners) {
-                publishListener.onEachSubscriberPublishStrategyAdapted(strategy, filterSubscriber, event, args);
+                publishListener.onEachSubscriberPublishStrategyAdapted(strategy, filterSubscriber, event, nonNullArgs);
             }
 
             ArkEventExceptionHandler handler = subscriberExceptionHandlerMap.get(filterSubscriber);
@@ -272,58 +279,38 @@ public class ArkEventDispatcherImpl implements ArkEventDispatcher {
             }
 
             for (ArkEventPublishListener publishListener : publishListeners) {
-                publishListener.onEachSubscriberExceptionHandlerAdapted(handler, filterSubscriber, event, args);
+                publishListener.onEachSubscriberExceptionHandlerAdapted(handler, filterSubscriber, event, nonNullArgs);
             }
 
-            publishers.add(new ArkEventPublisherImpl(filterSubscriber, strategy, handler));
-        }
-
-        for (ArkEventPublishListener publishListener : publishListeners) {
-            publishListener.onPublishersCreated(publishers, event, args);
+            executors.add(new PublishExecutor(filterSubscriber, strategy, handler, event, nonNullArgs));
         }
 
         for (ArkEventPublishSorter publishSorter : publishSorters) {
-            publishers.sort((o1, o2) -> {
-                boolean order1 = publishSorter.highOrder(o1.getStrategy(), o1.getSubscriber(), event, args);
-                boolean order2 = publishSorter.highOrder(o2.getStrategy(), o2.getSubscriber(), event, args);
+            executors.sort((o1, o2) -> {
+                boolean order1 = publishSorter.highOrder(o1.subscriber, o1.event, o1.args);
+                boolean order2 = publishSorter.highOrder(o2.subscriber, o2.event, o2.args);
                 return (order1 ? 0 : 1) - (order2 ? 0 : 1);
             });
         }
 
-        /*if (!publishSorters.isEmpty()) {
-            Comparator<ArkEventPublisherImpl> comparator = null;
-            for (int i = 0; i < publishSorters.size(); i++) {
-                ArkEventPublishSorter publishSorter = publishSorters.get(i);
-                Comparator<ArkEventPublisherImpl> c = (o1, o2) -> {
-                    boolean order1 = publishSorter.highOrder(o1.getStrategy(), o1.getSubscriber(), event, args);
-                    boolean order2 = publishSorter.highOrder(o2.getStrategy(), o2.getSubscriber(), event, args);
-                    return (order1 ? 0 : 1) - (order2 ? 0 : 1);
-                };
-                if (i == 0) {
-                    comparator = c;
-                } else {
-                    comparator.thenComparing(c);
-                }
-            }
-            publishers.sort(comparator);
-        }*/
+        List<ArkEventSubscriber> sortedSubscribers = executors.stream()
+                .map(it -> it.subscriber)
+                .collect(Collectors.toList());
 
         for (ArkEventPublishListener publishListener : publishListeners) {
-            publishListener.onPublishersSorted(publishers, event, args);
+            publishListener.onSubscribersSorted(sortedSubscribers, event, nonNullArgs);
         }
 
-        for (ArkEventPublisher publisher : publishers) {
-            publisher.publish(event, args);
-        }
+        executors.forEach(PublishExecutor::exec);
 
         for (ArkEventPublishListener publishListener : publishListeners) {
-            publishListener.onPublishFinished(event, args);
+            publishListener.onPublishFinished(event, nonNullArgs);
         }
     }
 
     private boolean filterSubscriber(Collection<ArkEventConditionFilter> filters,
                                      ArkEventSubscriber subscriber,
-                                     ArkEvent event, Object... args) {
+                                     ArkEvent event, Map<Object, Object> args) {
         if (filters == null) {
             return false;
         }
@@ -333,5 +320,36 @@ public class ArkEventDispatcherImpl implements ArkEventDispatcher {
             }
         }
         return true;
+    }
+
+    public static class PublishExecutor {
+
+        private ArkEventPublishStrategy strategy;
+
+        private ArkEventSubscriber subscriber;
+
+        private ArkEventExceptionHandler handler;
+
+        private ArkEvent event;
+
+        private Map<Object, Object> args;
+
+        public PublishExecutor(ArkEventSubscriber subscriber, ArkEventPublishStrategy strategy,
+                               ArkEventExceptionHandler handler, ArkEvent event, Map<Object, Object> args) {
+            this.subscriber = subscriber;
+            this.strategy = strategy;
+            this.handler = handler;
+            this.event = event;
+            this.args = args;
+        }
+
+        public void exec() {
+            try {
+                strategy.implement(subscriber, event, args);
+            } catch (Throwable e) {
+                ArkEventException aee = new ArkEventException(e, subscriber, strategy, event, args);
+                handler.handle(aee);
+            }
+        }
     }
 }

@@ -1,59 +1,33 @@
 package com.github.linyuzai.arkevent.support;
 
-import com.github.linyuzai.arkevent.core.ArkEventDispatcher;
+import com.github.linyuzai.arkevent.core.ArkEventPublisher;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 public class ArkEventPlugin {
 
-    private static ArkEventDispatcher dispatcher;
+    private static ArkEventPublisher publisher;
 
-    public static void setDispatcher(ArkEventDispatcher dispatcher) {
-        ArkEventPlugin.dispatcher = dispatcher;
+    public static void setPublisher(ArkEventPublisher publisher) {
+        ArkEventPlugin.publisher = publisher;
     }
 
-    public static ArkEventDispatcher getDispatcher() {
-        return dispatcher;
+    public static ArkEventPublisher getPublisher() {
+        return publisher;
     }
 
-    public static Object[] addArgs(Object[] args, Object... addArgs) {
-        List<Object> newArgs = new ArrayList<>();
-        newArgs.addAll(Arrays.asList(args));
-        newArgs.addAll(Arrays.asList(addArgs));
-        return newArgs.toArray();
+    public static final String ARGS_REMOTE_KEY = "x-ark-event-remote";
+
+    public static boolean isRemote(Map args) {
+        return args.containsKey(ARGS_REMOTE_KEY);
     }
 
-    private static final FromRemote REMOTE_ARGS = new FromRemote() {
-    };
+    public static final String ARGS_MQ_TRANSACTION_KEY = "x-arg-event-mq-transaction";
 
-    public static Object remoteArgs() {
-        return REMOTE_ARGS;
-    }
-
-    public static boolean isFromRemote(Object... args) {
-        long count = Arrays.stream(args).filter(it -> it instanceof FromRemote).count();
-        return count > 0;
-    }
-
-    public interface FromRemote {
-
-    }
-
-    private static final MqTransaction MQ_TRANSACTION_ARGS = new MqTransaction() {
-    };
-
-    public static Object mqTransactionArgs() {
-        return MQ_TRANSACTION_ARGS;
-    }
-
-    public static boolean isMqTransaction(Object... args) {
-        long count = Arrays.stream(args).filter(it -> it instanceof MqTransaction).count();
-        return count > 0;
-    }
-
-    public interface MqTransaction {
-
+    public static boolean isMqTransaction(Map args) {
+        return args.containsKey(ARGS_MQ_TRANSACTION_KEY);
     }
 }
