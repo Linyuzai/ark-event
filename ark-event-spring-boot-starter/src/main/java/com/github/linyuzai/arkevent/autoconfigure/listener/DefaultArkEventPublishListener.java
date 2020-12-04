@@ -59,8 +59,14 @@ public class DefaultArkEventPublishListener implements ArkEventPublishListener {
     }
 
     @Override
-    public void onPublishFinished(ArkEvent event, Map<Object, Object> args) {
-        log.info("{} {} finish publish with args {}",
+    public void onPublishCompleted(ArkEvent event, Map<Object, Object> args) {
+        log.info("{} {} complete publish with args {}",
                 TAG, event, args);
+    }
+
+    @Override
+    public void onPublishError(Throwable e, ArkEvent event, Map<Object, Object> args) {
+        log.error("{} {} publish error {} with args {}",
+                TAG, event, e.getMessage(), args);
     }
 }

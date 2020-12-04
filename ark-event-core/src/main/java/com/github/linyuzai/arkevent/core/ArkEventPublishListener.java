@@ -32,7 +32,11 @@ public interface ArkEventPublishListener {
                                      ArkEvent event, Map<Object, Object> args) {
     }
 
-    default void onPublishFinished(ArkEvent event, Map<Object, Object> args) {
+    default void onPublishCompleted(ArkEvent event, Map<Object, Object> args) {
+
+    }
+
+    default void onPublishError(Throwable e, ArkEvent event, Map<Object, Object> args) {
 
     }
 }
