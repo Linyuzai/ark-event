@@ -41,6 +41,7 @@ public class DefaultArkEventPublisher implements ArkEventPublisher {
             filterConditions(subscriber);
             adaptPublishStrategy(subscriber);
             adaptExceptionHandler(subscriber);
+            sortSubscribers();
         }
     }
 
@@ -53,6 +54,7 @@ public class DefaultArkEventPublisher implements ArkEventPublisher {
         filterConditions(subscriber);
         adaptPublishStrategy(subscriber);
         adaptExceptionHandler(subscriber);
+        sortSubscribers();
     }
 
     public List<ArkEventSubscriber> getSubscribers() {
@@ -151,7 +153,7 @@ public class DefaultArkEventPublisher implements ArkEventPublisher {
         }
     }
 
-    public void addExceptionHandlerAdapter(Collection<? extends ArkEventExceptionHandler.Adapter> adapters) {
+    public synchronized void addExceptionHandlerAdapter(Collection<? extends ArkEventExceptionHandler.Adapter> adapters) {
         for (ArkEventExceptionHandler.Adapter adapter : adapters) {
             if (adapter == null) {
                 throw new ArkEventException("ArkEventExceptionHandler.Adapter is null");
@@ -189,7 +191,7 @@ public class DefaultArkEventPublisher implements ArkEventPublisher {
         }
     }
 
-    public void addPublishSorter(Collection<? extends ArkEventPublishSorter> sorters) {
+    public synchronized void addPublishSorter(Collection<? extends ArkEventPublishSorter> sorters) {
         for (ArkEventPublishSorter sorter : sorters) {
             if (sorter == null) {
                 throw new ArkEventException("ArkEventPublishSorter is null");
@@ -197,18 +199,33 @@ public class DefaultArkEventPublisher implements ArkEventPublisher {
         }
         publishSorters.addAll(sorters);
         publishSorters.sort(Comparator.comparing(Order::order, Comparator.reverseOrder()));
+        sortSubscribers();
     }
 
-    public void addPublishSorter(ArkEventPublishSorter sorter) {
+    public synchronized void addPublishSorter(ArkEventPublishSorter sorter) {
         if (sorter == null) {
             throw new ArkEventException("ArkEventPublishSorter is null");
         }
         publishSorters.add(sorter);
         publishSorters.sort(Comparator.comparing(Order::order, Comparator.reverseOrder()));
+        sortSubscribers();
     }
 
     public List<ArkEventPublishSorter> getPublishSorters() {
         return publishSorters;
+    }
+
+    private void sortSubscribers() {
+        if (subscribers.isEmpty()) {
+            return;
+        }
+        for (ArkEventPublishSorter publishSorter : publishSorters) {
+            subscribers.sort((o1, o2) -> {
+                boolean order1 = publishSorter.highOrder(o1);
+                boolean order2 = publishSorter.highOrder(o2);
+                return (order1 ? 0 : 1) - (order2 ? 0 : 1);
+            });
+        }
     }
 
     public void addPublishListener(Collection<? extends ArkEventPublishListener> listeners) {
@@ -285,13 +302,13 @@ public class DefaultArkEventPublisher implements ArkEventPublisher {
             executors.add(new PublishExecutor(filterSubscriber, strategy, handler, event, nonNullArgs));
         }
 
-        for (ArkEventPublishSorter publishSorter : publishSorters) {
+        /*for (ArkEventPublishSorter publishSorter : publishSorters) {
             executors.sort((o1, o2) -> {
-                boolean order1 = publishSorter.highOrder(o1.subscriber, o1.event, o1.args);
-                boolean order2 = publishSorter.highOrder(o2.subscriber, o2.event, o2.args);
+                boolean order1 = publishSorter.highOrder(o1.subscriber);
+                boolean order2 = publishSorter.highOrder(o2.subscriber);
                 return (order1 ? 0 : 1) - (order2 ? 0 : 1);
             });
-        }
+        }*/
 
         List<ArkEventSubscriber> sortedSubscribers = executors.stream()
                 .map(it -> it.subscriber)
