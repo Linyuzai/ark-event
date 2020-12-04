@@ -25,7 +25,7 @@ public class ArkEventPlugin {
         return args.containsKey(ARGS_REMOTE_KEY);
     }
 
-    public static final String ARGS_MQ_TRANSACTION_KEY = "x-arg-event-mq-transaction";
+    public static final String ARGS_MQ_TRANSACTION_KEY = "x-ark-event-mq-transaction";
 
     public static boolean isMqTransaction(Map args) {
         return args.containsKey(ARGS_MQ_TRANSACTION_KEY);
