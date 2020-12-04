@@ -3,14 +3,14 @@ package com.github.linyuzai.arkevent.autoconfigure;
 import com.github.linyuzai.arkevent.autoconfigure.configuration.ArkEventAutoConfiguration;
 import com.github.linyuzai.arkevent.autoconfigure.configuration.ArkEventTransactionAutoConfiguration;
 import com.github.linyuzai.arkevent.autoconfigure.configuration.ArkMqEventAutoConfiguration;
-import org.springframework.context.annotation.ImportSelector;
+import org.springframework.context.annotation.DeferredImportSelector;
 import org.springframework.core.type.AnnotationMetadata;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class ArkEventConfigurationSelector implements ImportSelector {
+public class ArkEventConfigurationSelector implements DeferredImportSelector {
 
     @Override
     public String[] selectImports(AnnotationMetadata importingClassMetadata) {

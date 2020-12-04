@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class DefaultArkEventPublishListener implements ArkEventPublishListener {
 
@@ -14,52 +15,85 @@ public class DefaultArkEventPublishListener implements ArkEventPublishListener {
 
     private static final String TAG = "【ArkEvent】";
 
+    public String getObjectName(Object object) {
+        return object.getClass().getSimpleName();
+    }
+
+    public String getObjectsName(Collection<?> objects) {
+        return objects.stream().map(it -> it.getClass().getSimpleName()).collect(Collectors.toList()).toString();
+    }
+
+    public String getSubscriberName(ArkEventSubscriber subscriber) {
+        return getObjectName(subscriber);
+    }
+
+    public String getSubscribersName(Collection<? extends ArkEventSubscriber> subscribers) {
+        return getObjectsName(subscribers);
+    }
+
+    public String getFiltersName(Collection<? extends ArkEventConditionFilter> filters) {
+        return getObjectsName(filters);
+    }
+
+    public String getStrategyName(ArkEventPublishStrategy strategy) {
+        return getObjectName(strategy);
+    }
+
+    public String getHandlerName(ArkEventExceptionHandler handler) {
+        return getObjectName(handler);
+    }
+
+    public String getEventName(ArkEvent event) {
+        return getObjectName(event);
+    }
+
     @Override
     public void onPublishStarted(ArkEvent event, Map<Object, Object> args) {
         log.info("{} {} start publish with args {}",
-                TAG, event, args);
+                TAG, getEventName(event), args);
     }
 
     @Override
     public void onEachSubscriberConditionsFiltered(boolean filter, ArkEventSubscriber subscriber,
                                                    Collection<? extends ArkEventConditionFilter> filters,
                                                    ArkEvent event, Map<Object, Object> args) {
-        log.info("{} Subscriber {} which has conditions {} is {} for {} with args {}",
-                TAG, subscriber, filters.toString(), filter ? "matched" : "not matched", event, args);
+        log.info("{} Conditions {} on subscriber {} {} event {} with args {}",
+                TAG, getFiltersName(filters), getSubscriberName(subscriber),
+                filter ? "matched" : "not matched", getEventName(event), args);
     }
 
     @Override
     public void onSubscribersFiltered(Collection<? extends ArkEventSubscriber> subscribers,
                                       ArkEvent event, Map<Object, Object> args) {
-        log.info("{} Subscribers {} is matched for {} with args {}",
-                TAG, subscribers.toString(), event, args);
+        log.info("{} {} subscribers {} matched event {} with args {}",
+                TAG, subscribers.size(), getSubscribersName(subscribers), getEventName(event), args);
     }
 
     @Override
     public void onEachSubscriberPublishStrategyAdapted(ArkEventPublishStrategy strategy,
                                                        ArkEventSubscriber subscriber,
                                                        ArkEvent event, Map<Object, Object> args) {
-        log.info("{} Subscriber {} is adapted publish strategy {} for {} with args {}",
-                TAG, subscriber, strategy, event, args);
+        log.info("{} Publish strategy {} adapted subscriber {} on event {} with args {}",
+                TAG, getStrategyName(strategy), getSubscriberName(subscriber), getEventName(event), args);
     }
 
     @Override
     public void onEachSubscriberExceptionHandlerAdapted(ArkEventExceptionHandler handler,
                                                         ArkEventSubscriber subscriber,
                                                         ArkEvent event, Map<Object, Object> args) {
-        log.info("{} Subscriber {} is adapted exception handler {} for {} with args {}",
-                TAG, subscriber, handler, event, args);
+        log.info("{} Exception handler {} adapted subscriber {} on event {} with args {}",
+                TAG, getSubscriberName(subscriber), getHandlerName(handler), getEventName(event), args);
     }
 
     @Override
     public void onPublishCompleted(ArkEvent event, Map<Object, Object> args) {
-        log.info("{} {} complete publish with args {}",
-                TAG, event, args);
+        log.info("{} Event {} complete publish with args {}",
+                TAG, getEventName(event), args);
     }
 
     @Override
     public void onPublishError(Throwable e, ArkEvent event, Map<Object, Object> args) {
-        log.error("{} {} publish error {} with args {}",
-                TAG, event, e.getMessage(), args);
+        log.error("{} Event {} publish error {} with args {}",
+                TAG, getEventName(event), e.getMessage(), args);
     }
 }

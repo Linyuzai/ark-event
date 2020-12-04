@@ -316,6 +316,7 @@ public class DefaultArkEventPublisher implements ArkEventPublisher {
             for (ArkEventPublishListener publishListener : publishListeners) {
                 publishListener.onPublishError(e, event, nonNullArgs);
             }
+            throw e;
         }
 
         for (ArkEventPublishListener publishListener : publishListeners) {

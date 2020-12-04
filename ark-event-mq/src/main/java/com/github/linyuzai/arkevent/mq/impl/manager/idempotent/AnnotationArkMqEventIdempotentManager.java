@@ -26,7 +26,7 @@ public abstract class AnnotationArkMqEventIdempotentManager implements ArkMqEven
         return isIdempotentEventHandled(eventId, decoder, o);
     }
 
-    public abstract String getIdempotentEventId(ArkEvent event, Object... args);
+    public abstract String getIdempotentEventId(ArkEvent event, Map<Object, Object> args);
 
     public abstract boolean isIdempotentEventHandled(String eventId, ArkMqEventDecoder decoder, Object o);
 }

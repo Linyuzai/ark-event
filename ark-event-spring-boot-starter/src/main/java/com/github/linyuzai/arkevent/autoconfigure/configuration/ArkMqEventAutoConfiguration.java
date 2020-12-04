@@ -69,12 +69,6 @@ public class ArkMqEventAutoConfiguration {
     }
 
     @Bean
-    @ConditionalOnMissingBean(RabbitAdmin.class)
-    public RabbitAdmin rabbitAdmin(ConnectionFactory factory) {
-        return new RabbitAdmin(factory);
-    }
-
-    @Bean
     public Object rabbitArkEventBinding(RabbitAdmin admin,
                                         RabbitArkMqEventTopicExchange exchange,
                                         RabbitArkMqEventQueue queue,
@@ -158,7 +152,7 @@ public class ArkMqEventAutoConfiguration {
         return new AnnotationArkMqEventIdempotentManager() {
 
             @Override
-            public String getIdempotentEventId(ArkEvent event, Object... args) {
+            public String getIdempotentEventId(ArkEvent event, Map<Object, Object> args) {
                 return EVENT_IDEMPOTENT_IGNORED;
             }
 
