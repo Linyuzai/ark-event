@@ -52,13 +52,6 @@ public class DefaultArkEventPublishListener implements ArkEventPublishListener {
     }
 
     @Override
-    public void onSubscribersSorted(Collection<? extends ArkEventSubscriber> subscribers,
-                                    ArkEvent event, Map<Object, Object> args) {
-        log.info("{} Subscribers {} sorted for {} with args {}",
-                TAG, subscribers, event, args);
-    }
-
-    @Override
     public void onPublishCompleted(ArkEvent event, Map<Object, Object> args) {
         log.info("{} {} complete publish with args {}",
                 TAG, event, args);

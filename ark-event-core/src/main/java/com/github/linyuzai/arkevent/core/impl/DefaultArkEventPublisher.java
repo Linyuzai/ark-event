@@ -310,14 +310,6 @@ public class DefaultArkEventPublisher implements ArkEventPublisher {
             });
         }*/
 
-        List<ArkEventSubscriber> sortedSubscribers = executors.stream()
-                .map(it -> it.subscriber)
-                .collect(Collectors.toList());
-
-        for (ArkEventPublishListener publishListener : publishListeners) {
-            publishListener.onSubscribersSorted(sortedSubscribers, event, nonNullArgs);
-        }
-
         try {
             executors.forEach(PublishExecutor::exec);
         } catch (Throwable e) {

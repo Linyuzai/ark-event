@@ -28,10 +28,6 @@ public interface ArkEventPublishListener {
                                                          ArkEvent event, Map<Object, Object> args) {
     }
 
-    default void onSubscribersSorted(Collection<? extends ArkEventSubscriber> subscribers,
-                                     ArkEvent event, Map<Object, Object> args) {
-    }
-
     default void onPublishCompleted(ArkEvent event, Map<Object, Object> args) {
 
     }
