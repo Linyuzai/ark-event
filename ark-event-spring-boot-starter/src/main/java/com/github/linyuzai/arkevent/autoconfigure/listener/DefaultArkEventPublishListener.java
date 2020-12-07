@@ -82,7 +82,7 @@ public class DefaultArkEventPublishListener implements ArkEventPublishListener {
                                                         ArkEventSubscriber subscriber,
                                                         ArkEvent event, Map<Object, Object> args) {
         log.info("{} Exception handler {} adapted subscriber {} on event {} with args {}",
-                TAG, getSubscriberName(subscriber), getHandlerName(handler), getEventName(event), args);
+                TAG, getHandlerName(handler), getSubscriberName(subscriber), getEventName(event), args);
     }
 
     @Override
