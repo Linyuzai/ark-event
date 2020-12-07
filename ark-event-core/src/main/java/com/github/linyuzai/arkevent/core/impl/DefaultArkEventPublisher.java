@@ -279,7 +279,7 @@ public class DefaultArkEventPublisher implements ArkEventPublisher {
             publishListener.onSubscribersFiltered(filterSubscribers, event, nonNullArgs);
         }
 
-        List<PublishExecutor> executors = new ArrayList<>();
+        //List<PublishExecutor> executors = new ArrayList<>();
         for (ArkEventSubscriber filterSubscriber : filterSubscribers) {
             ArkEventPublishStrategy strategy = subscriberPublishStrategyMap.get(filterSubscriber);
             if (strategy == null) {
@@ -299,25 +299,30 @@ public class DefaultArkEventPublisher implements ArkEventPublisher {
                 publishListener.onEachSubscriberExceptionHandlerAdapted(handler, filterSubscriber, event, nonNullArgs);
             }
 
-            executors.add(new PublishExecutor(filterSubscriber, strategy, handler, event, nonNullArgs));
+            //executors.add(new PublishExecutor(filterSubscriber, strategy, handler, event, nonNullArgs));
+            try {
+                try {
+                    strategy.implement(filterSubscriber, event, nonNullArgs);
+                } catch (Throwable e) {
+                    ArkEventException aee = new ArkEventException(e, filterSubscriber, strategy, event, nonNullArgs);
+                    handler.handle(aee);
+                }
+            } catch (Throwable e) {
+                for (ArkEventPublishListener publishListener : publishListeners) {
+                    publishListener.onPublishError(e, event, nonNullArgs);
+                }
+                throw e;
+            }
         }
 
-        /*for (ArkEventPublishSorter publishSorter : publishSorters) {
-            executors.sort((o1, o2) -> {
-                boolean order1 = publishSorter.highOrder(o1.subscriber);
-                boolean order2 = publishSorter.highOrder(o2.subscriber);
-                return (order1 ? 0 : 1) - (order2 ? 0 : 1);
-            });
-        }*/
-
-        try {
+        /*try {
             executors.forEach(PublishExecutor::exec);
         } catch (Throwable e) {
             for (ArkEventPublishListener publishListener : publishListeners) {
                 publishListener.onPublishError(e, event, nonNullArgs);
             }
             throw e;
-        }
+        }*/
 
         for (ArkEventPublishListener publishListener : publishListeners) {
             publishListener.onPublishCompleted(event, nonNullArgs);
@@ -338,6 +343,7 @@ public class DefaultArkEventPublisher implements ArkEventPublisher {
         return true;
     }
 
+    @Deprecated
     public static class PublishExecutor {
 
         private ArkEventPublishStrategy strategy;
