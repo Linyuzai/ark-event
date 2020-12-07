@@ -23,14 +23,22 @@ public class ArkMqEventExceptionHandler implements ArkEventExceptionHandler {
 
     @Override
     public void handle(ArkEventException ex) {
-        if (ArkEventPlugin.isMqTransaction(ex.getArgs())) {
-            throw ex;
+        if (ArkEventPlugin.isRemoteMessageException(ex.getArgs())) {
+            handleMqMessageException(ex);
         } else {
-            handleMqException(ex);
+            if (ArkEventPlugin.isMqTransaction(ex.getArgs())) {
+                throw ex;
+            } else {
+                handleMqEventException(ex);
+            }
         }
     }
 
-    public void handleMqException(ArkEventException ex) {
+    public void handleMqEventException(ArkEventException ex) {
+        loggerHandler.handle(ex);
+    }
+
+    public void handleMqMessageException(ArkEventException ex) {
         loggerHandler.handle(ex);
     }
 }

@@ -9,6 +9,11 @@ public class ArkEventException extends RuntimeException {
     private ArkEvent event;
     private Map<Object, Object> args;
 
+    public ArkEventException(Throwable cause, Map<Object, Object> args) {
+        super(cause);
+        this.args = args;
+    }
+
     public ArkEventException(Throwable cause, ArkEventSubscriber subscriber, ArkEventPublishStrategy strategy,
                              ArkEvent event, Map<Object, Object> args) {
         super(cause);

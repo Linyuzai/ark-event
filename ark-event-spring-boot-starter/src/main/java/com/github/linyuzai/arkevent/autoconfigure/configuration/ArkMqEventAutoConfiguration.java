@@ -11,6 +11,7 @@ import com.github.linyuzai.arkevent.mq.impl.manager.idempotent.AnnotationArkMqEv
 import com.github.linyuzai.arkevent.mq.impl.sorter.publish.ArkMqEventPublishSorter;
 import com.github.linyuzai.arkevent.mq.impl.strategy.publish.ArkMqEventPublishStrategyAdapter;
 import com.github.linyuzai.arkevent.mq.properties.ArkMqEventProperties;
+import com.github.linyuzai.arkevent.mq.rabbit.RabbitArkMqEventMessagePostProcessor;
 import com.github.linyuzai.arkevent.mq.rabbit.RabbitArkMqEventQueue;
 import com.github.linyuzai.arkevent.mq.rabbit.RabbitArkMqEventRoutingKeyProvider;
 import com.github.linyuzai.arkevent.mq.rabbit.RabbitArkMqEventTopicExchange;
@@ -25,6 +26,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class ArkMqEventAutoConfiguration {
@@ -130,23 +132,6 @@ public class ArkMqEventAutoConfiguration {
     }
 
     @Bean
-    @ConditionalOnMissingBean(ArkMqEventSubscriber.class)
-    public RabbitArkMqEventSubscriber arkMqEventSubscriber(
-            RabbitTemplate template,
-            RabbitArkMqEventTopicExchange exchange,
-            RabbitArkMqEventRoutingKeyProvider routingKeyProvider,
-            ArkMqEventIdempotentManager idempotentManager,
-            ArkMqEventEncoder encoder) {
-        RabbitArkMqEventSubscriber subscriber = new RabbitArkMqEventSubscriber();
-        subscriber.setTemplate(template);
-        subscriber.setExchange(exchange);
-        subscriber.setRoutingKeyProvider(routingKeyProvider);
-        subscriber.setIdempotentManager(idempotentManager);
-        subscriber.setEncoder(encoder);
-        return subscriber;
-    }
-
-    @Bean
     @ConditionalOnMissingBean(ArkMqEventIdempotentManager.class)
     public ArkMqEventIdempotentManager arkMqEventIdempotentManager() {
         return new AnnotationArkMqEventIdempotentManager() {
@@ -166,6 +151,29 @@ public class ArkMqEventAutoConfiguration {
 
             }
         };
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(EventIdMessagePostProcessor.class)
+    public EventIdMessagePostProcessor eventIdMessagePostProcessor(ArkMqEventIdempotentManager idempotentManager) {
+        return new EventIdMessagePostProcessor(idempotentManager);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(ArkMqEventSubscriber.class)
+    public RabbitArkMqEventSubscriber arkMqEventSubscriber(
+            RabbitTemplate template,
+            RabbitArkMqEventTopicExchange exchange,
+            RabbitArkMqEventRoutingKeyProvider routingKeyProvider,
+            ArkMqEventEncoder encoder,
+            List<RabbitArkMqEventMessagePostProcessor> messagePostProcessors) {
+        RabbitArkMqEventSubscriber subscriber = new RabbitArkMqEventSubscriber();
+        subscriber.setTemplate(template);
+        subscriber.setExchange(exchange);
+        subscriber.setRoutingKeyProvider(routingKeyProvider);
+        subscriber.setEncoder(encoder);
+        subscriber.setMessagePostProcessors(messagePostProcessors);
+        return subscriber;
     }
 
     @Bean

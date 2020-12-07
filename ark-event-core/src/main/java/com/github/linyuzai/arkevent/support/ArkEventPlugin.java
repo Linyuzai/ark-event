@@ -2,9 +2,6 @@ package com.github.linyuzai.arkevent.support;
 
 import com.github.linyuzai.arkevent.core.ArkEventPublisher;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 
 public class ArkEventPlugin {
@@ -19,6 +16,8 @@ public class ArkEventPlugin {
         return publisher;
     }
 
+    public static final String HEADER_EVENT_ID = "h-ark-event-event-id";
+
     public static final String ARGS_REMOTE_KEY = "x-ark-event-remote";
 
     public static boolean isRemote(Map args) {
@@ -29,5 +28,11 @@ public class ArkEventPlugin {
 
     public static boolean isMqTransaction(Map args) {
         return args.containsKey(ARGS_MQ_TRANSACTION_KEY);
+    }
+
+    public static final String ARGS_REMOTE_MESSAGE_EXCEPTION_KEY = "x-ark-event-remote-message-exception";
+
+    public static boolean isRemoteMessageException(Map args) {
+        return args.containsKey(ARGS_REMOTE_MESSAGE_EXCEPTION_KEY);
     }
 }
