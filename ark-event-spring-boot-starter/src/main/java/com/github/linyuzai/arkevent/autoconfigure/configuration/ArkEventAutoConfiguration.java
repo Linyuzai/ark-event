@@ -3,6 +3,7 @@ package com.github.linyuzai.arkevent.autoconfigure.configuration;
 import com.github.linyuzai.arkevent.autoconfigure.listener.DefaultArkEventPublishListener;
 import com.github.linyuzai.arkevent.core.*;
 import com.github.linyuzai.arkevent.core.impl.DefaultArkEventPublisher;
+import com.github.linyuzai.arkevent.core.impl.filter.condition.expression.ExpressionArkEventConditionFilterFactory;
 import com.github.linyuzai.arkevent.support.ArkEventPlugin;
 import com.github.linyuzai.arkevent.core.impl.filter.condition.group.GroupArkEventConditionFilterFactory;
 import com.github.linyuzai.arkevent.core.impl.filter.condition.type.TypeArkEventConditionFilterFactory;
@@ -26,6 +27,12 @@ public class ArkEventAutoConfiguration {
     @ConditionalOnMissingBean(GroupArkEventConditionFilterFactory.class)
     public GroupArkEventConditionFilterFactory groupArkEventConditionFilterFactory() {
         return new GroupArkEventConditionFilterFactory();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(ExpressionArkEventConditionFilterFactory.class)
+    public ExpressionArkEventConditionFilterFactory expressionArkEventConditionFilterFactory() {
+        return new ExpressionArkEventConditionFilterFactory();
     }
 
     @Bean
