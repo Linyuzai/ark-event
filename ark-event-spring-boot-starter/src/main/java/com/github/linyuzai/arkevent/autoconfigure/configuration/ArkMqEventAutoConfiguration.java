@@ -166,6 +166,12 @@ public class ArkMqEventAutoConfiguration {
     }
 
     @Bean
+    @ConditionalOnMissingBean(ExpirationMessagePostProcessor.class)
+    public ExpirationMessagePostProcessor expirationMessagePostProcessor() {
+        return new ExpirationMessagePostProcessor();
+    }
+
+    @Bean
     @ConditionalOnMissingBean(ArkMqEventSubscriber.class)
     public RabbitArkMqEventSubscriber arkMqEventSubscriber(
             RabbitTemplate template,

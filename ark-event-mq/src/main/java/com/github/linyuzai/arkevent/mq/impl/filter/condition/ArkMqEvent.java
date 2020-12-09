@@ -7,4 +7,8 @@ public interface ArkMqEvent extends ArkEvent {
     default boolean transaction() {
         return false;
     }
+
+    default long expiration() {
+        return 0;
+    }
 }

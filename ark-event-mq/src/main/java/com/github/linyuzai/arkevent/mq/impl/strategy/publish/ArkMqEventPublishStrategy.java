@@ -32,7 +32,7 @@ public class ArkMqEventPublishStrategy implements ArkEventPublishStrategy {
             return ((ArkMqEvent) event).transaction();
         } else {
             MqEvent mqEvent = event.getClass().getAnnotation(MqEvent.class);
-            return mqEvent.transaction();
+            return mqEvent != null && mqEvent.transaction();
         }
     }
 }

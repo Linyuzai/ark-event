@@ -8,4 +8,6 @@ import java.lang.annotation.*;
 public @interface MqEvent {
 
     boolean transaction() default false;
+
+    long expiration() default 0;
 }
