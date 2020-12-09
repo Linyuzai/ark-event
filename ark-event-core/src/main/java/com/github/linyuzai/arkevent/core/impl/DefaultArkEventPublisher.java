@@ -7,7 +7,6 @@ import com.github.linyuzai.arkevent.support.Order;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.stream.Collectors;
 
 public class DefaultArkEventPublisher implements ArkEventPublisher {
 
@@ -18,6 +17,8 @@ public class DefaultArkEventPublisher implements ArkEventPublisher {
     private Map<ArkEventSubscriber, ArkEventExceptionHandler> subscriberExceptionHandlerMap = new ConcurrentHashMap<>();
 
     private List<ArkEventSubscriber> subscribers = new CopyOnWriteArrayList<>();
+
+    private List<ArkEventArgsProcessor> argsProcessors = new CopyOnWriteArrayList<>();
 
     private List<ArkEventConditionFilter.Factory> conditionFilterFactories = new CopyOnWriteArrayList<>();
 
@@ -59,6 +60,28 @@ public class DefaultArkEventPublisher implements ArkEventPublisher {
 
     public List<ArkEventSubscriber> getSubscribers() {
         return subscribers;
+    }
+
+    public void addArgsProcessor(Collection<? extends ArkEventArgsProcessor> argsProcessors) {
+        for (ArkEventArgsProcessor argsProcessor : argsProcessors) {
+            if (argsProcessor == null) {
+                throw new ArkEventException("ArkEventArgsProcessor is null");
+            }
+        }
+        this.argsProcessors.addAll(argsProcessors);
+        this.argsProcessors.sort(Comparator.comparingInt(Order::order));
+    }
+
+    public void addArgsProcessor(ArkEventArgsProcessor argsProcessor) {
+        if (argsProcessor == null) {
+            throw new ArkEventException("ArkEventArgsProcessor is null");
+        }
+        this.argsProcessors.add(argsProcessor);
+        this.argsProcessors.sort(Comparator.comparingInt(Order::order));
+    }
+
+    public List<ArkEventArgsProcessor> getArgsProcessors() {
+        return argsProcessors;
     }
 
     public synchronized void addConditionFilterFactory(Collection<? extends ArkEventConditionFilter.Factory> factories) {
@@ -258,6 +281,14 @@ public class DefaultArkEventPublisher implements ArkEventPublisher {
 
         for (ArkEventPublishListener publishListener : publishListeners) {
             publishListener.onPublishStarted(event, nonNullArgs);
+        }
+
+        for (ArkEventArgsProcessor argsProcessor : argsProcessors) {
+            argsProcessor.process(event, nonNullArgs);
+        }
+
+        for (ArkEventPublishListener publishListener : publishListeners) {
+            publishListener.onEventArgsProcessed(argsProcessors, event, nonNullArgs);
         }
 
         List<ArkEventSubscriber> filterSubscribers = new ArrayList<>();

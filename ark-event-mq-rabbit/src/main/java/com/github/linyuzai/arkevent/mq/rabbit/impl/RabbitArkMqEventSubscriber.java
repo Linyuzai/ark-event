@@ -6,6 +6,7 @@ import com.github.linyuzai.arkevent.mq.*;
 import com.github.linyuzai.arkevent.mq.rabbit.RabbitArkMqEventMessagePostProcessor;
 import com.github.linyuzai.arkevent.mq.rabbit.RabbitArkMqEventRoutingKeyProvider;
 import com.github.linyuzai.arkevent.mq.rabbit.RabbitArkMqEventTopicExchange;
+import com.github.linyuzai.arkevent.mq.rabbit.RabbitRPC;
 import com.github.linyuzai.arkevent.support.ArkEventPlugin;
 import org.springframework.amqp.core.MessagePostProcessor;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -75,7 +76,7 @@ public class RabbitArkMqEventSubscriber implements ArkEventSubscriber, ArkMqEven
             }
             return message;
         };
-        if (ArkEventPlugin.isMqTransaction(args)) {
+        if (args.containsKey(RabbitRPC.class.getName()) || ArkEventPlugin.isMqTransaction(args)) {
             template.convertSendAndReceive(exchange.getName(), routingKeyProvider.getRoutingKey(),
                     encoder.encode(event), mpp);
         } else {

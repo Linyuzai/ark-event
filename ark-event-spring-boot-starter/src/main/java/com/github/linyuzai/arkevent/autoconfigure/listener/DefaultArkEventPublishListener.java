@@ -23,6 +23,10 @@ public class DefaultArkEventPublishListener implements ArkEventPublishListener {
         return objects.stream().map(it -> it.getClass().getSimpleName()).collect(Collectors.toList()).toString();
     }
 
+    public String getArgsProcessorsName(Collection<? extends ArkEventArgsProcessor> argsProcessors) {
+        return getObjectsName(argsProcessors);
+    }
+
     public String getSubscriberName(ArkEventSubscriber subscriber) {
         return getObjectName(subscriber);
     }
@@ -51,6 +55,13 @@ public class DefaultArkEventPublishListener implements ArkEventPublishListener {
     public void onPublishStarted(ArkEvent event, Map<Object, Object> args) {
         log.info("{} {} start publish with args {}",
                 TAG, getEventName(event), args);
+    }
+
+    @Override
+    public void onEventArgsProcessed(Collection<? extends ArkEventArgsProcessor> argsProcessors,
+                                     ArkEvent event, Map<Object, Object> args) {
+        log.info("{} Args processed {} on event {} with args {}",
+                TAG, getArgsProcessorsName(argsProcessors), getEventName(event), args);
     }
 
     @Override

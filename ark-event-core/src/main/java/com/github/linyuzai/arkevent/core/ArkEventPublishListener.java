@@ -9,6 +9,11 @@ public interface ArkEventPublishListener {
 
     }
 
+    default void onEventArgsProcessed(Collection<? extends ArkEventArgsProcessor> argsProcessors,
+                                      ArkEvent event, Map<Object, Object> args) {
+
+    }
+
     default void onEachSubscriberConditionsFiltered(boolean filter, ArkEventSubscriber subscriber,
                                                     Collection<? extends ArkEventConditionFilter> filters,
                                                     ArkEvent event, Map<Object, Object> args) {

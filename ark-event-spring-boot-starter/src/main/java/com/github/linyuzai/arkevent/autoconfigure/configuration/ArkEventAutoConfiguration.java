@@ -62,6 +62,7 @@ public class ArkEventAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(ArkEventPublisher.class)
     public DefaultArkEventPublisher defaultArkEventPublisher(List<ArkEventSubscriber> subscribers,
+                                                             List<ArkEventArgsProcessor> argsProcessors,
                                                              List<ArkEventPublishListener> publishListeners,
                                                              List<ArkEventConditionFilter.Factory> conditionFilterFactories,
                                                              List<ArkEventPublishStrategy.Adapter> publishStrategyAdapters,
@@ -69,6 +70,7 @@ public class ArkEventAutoConfiguration {
                                                              List<ArkEventPublishSorter> publishSorters) {
         DefaultArkEventPublisher publisher = new DefaultArkEventPublisher();
         publisher.addPublishListener(publishListeners);
+        publisher.addArgsProcessor(argsProcessors);
         publisher.addConditionFilterFactory(conditionFilterFactories);
         publisher.addPublishStrategyAdapter(publishStrategyAdapters);
         publisher.addExceptionHandlerAdapter(exceptionHandlerAdapters);

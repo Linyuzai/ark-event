@@ -96,6 +96,12 @@ public class ArkMqEventAutoConfiguration {
     }
 
     @Bean
+    @ConditionalOnMissingBean(RabbitRPCArkEventArgsProcessor.class)
+    public RabbitRPCArkEventArgsProcessor rabbitRPCArkEventArgsProcessor() {
+        return new RabbitRPCArkEventArgsProcessor();
+    }
+
+    @Bean
     @ConditionalOnMissingBean(ArkMqEventPublishSorter.class)
     public ArkMqEventPublishSorter arkMqEventPublishSorter() {
         return new ArkMqEventPublishSorter();
