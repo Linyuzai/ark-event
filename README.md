@@ -54,10 +54,9 @@ public class SampleTransactionEventExceptionHandler extends TransactionArkEventE
         super(transactionManager);
     }
 
-    //默认打印日志
     @Override
     public void handleTransactionException(ArkEventException ex) {
-        //
+    
     }
 }
 ```
