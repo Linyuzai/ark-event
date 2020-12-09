@@ -87,4 +87,30 @@ public class SampleMqEventModulesProvider implements ArkMqEventModulesProvider {
 
 ### MQ事务支持
 
+- 标记MQ事务事件
+```
+@MqEvent(transaction = true)
+public class SampleEvent implements ArkEvent {
+
+}
+```
+
 - 最终一致性，在消费者的服务中，标记了`@EventTransaction`的消费者在异常时也会调用`TransactionArkEventExceptionHandler#handleTransactionException()`作为补救措施
+
+### 高级用法
+
+- args处理，可自定义`ArkEventArgsProcessor`处理args
+- 条件过滤，可自定义`ArkEventConditionFilter`和`ArkEventConditionFilter.Factory`添加事件到消费者的过滤条件
+- 发布策略，可自定义`ArkEventPublishStrategy`和`ArkEventPublishStrategy.Adapter`扩展事件到消费者发布流程
+- 异常处理，可自定义`ArkEventExceptionHandler`和`ArkEventExceptionHandler.Adapter`扩展消费者处理异常的补救措施
+- 发布顺序，可自定义`ArkEventPublishSorter`定义消费者处理顺序
+- 发布监听，可自定义`ArkEventPublishListener`监听发布流程
+
+- 事务管理，可自定义`ArkEventTransactionManager`管理事务状态
+- 事务异常，可自定义`TransactionArkEventExceptionHandler`补救事务异常
+
+- MQ配置，可自定义`ArkMqEventProperties`中的参数配置交换机和队列
+- 模块通道，可自定义`ArkMqEventModuleIdProvider`和`ArkMqEventModulesProvider`配置事件服务模块通道
+- 消息编码，可自定义`ArkMqEventEncoder`编码消息
+- 消息解码，可自定义`ArkMqEventDecoder`解码消息
+- 消息幂等，可自定义`ArkMqEventIdempotentManager`处理消息幂等
