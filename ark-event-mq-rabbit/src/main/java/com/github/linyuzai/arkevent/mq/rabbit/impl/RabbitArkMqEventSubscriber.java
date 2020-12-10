@@ -3,11 +3,9 @@ package com.github.linyuzai.arkevent.mq.rabbit.impl;
 import com.github.linyuzai.arkevent.core.ArkEvent;
 import com.github.linyuzai.arkevent.core.ArkEventSubscriber;
 import com.github.linyuzai.arkevent.mq.*;
-import com.github.linyuzai.arkevent.mq.rabbit.RabbitArkMqEventMessagePostProcessor;
-import com.github.linyuzai.arkevent.mq.rabbit.RabbitArkMqEventRoutingKeyProvider;
-import com.github.linyuzai.arkevent.mq.rabbit.RabbitArkMqEventTopicExchange;
-import com.github.linyuzai.arkevent.mq.rabbit.RabbitRPC;
+import com.github.linyuzai.arkevent.mq.rabbit.*;
 import com.github.linyuzai.arkevent.support.ArkEventPlugin;
+import org.springframework.amqp.AmqpException;
 import org.springframework.amqp.core.MessagePostProcessor;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 
@@ -18,6 +16,8 @@ public class RabbitArkMqEventSubscriber implements ArkEventSubscriber, ArkMqEven
 
     private RabbitTemplate template;
 
+    private RabbitTemplate publisherConfirmsTemplate;
+
     private RabbitArkMqEventTopicExchange exchange;
 
     private RabbitArkMqEventRoutingKeyProvider routingKeyProvider;
@@ -26,12 +26,22 @@ public class RabbitArkMqEventSubscriber implements ArkEventSubscriber, ArkMqEven
 
     private List<RabbitArkMqEventMessagePostProcessor> messagePostProcessors;
 
+    private long waitForConfirmsTimeout = 5000;
+
     public RabbitTemplate getTemplate() {
         return template;
     }
 
     public void setTemplate(RabbitTemplate template) {
         this.template = template;
+    }
+
+    public RabbitTemplate getPublisherConfirmsTemplate() {
+        return publisherConfirmsTemplate;
+    }
+
+    public void setPublisherConfirmsTemplate(RabbitTemplate publisherConfirmsTemplate) {
+        this.publisherConfirmsTemplate = publisherConfirmsTemplate;
     }
 
     public RabbitArkMqEventTopicExchange getExchange() {
@@ -66,6 +76,14 @@ public class RabbitArkMqEventSubscriber implements ArkEventSubscriber, ArkMqEven
         this.messagePostProcessors = messagePostProcessors;
     }
 
+    public long getWaitForConfirmsTimeout() {
+        return waitForConfirmsTimeout;
+    }
+
+    public void setWaitForConfirmsTimeout(long waitForConfirmsTimeout) {
+        this.waitForConfirmsTimeout = waitForConfirmsTimeout;
+    }
+
     @Override
     public void onSubscribe(ArkEvent event, Map<Object, Object> args) throws Throwable {
         final MessagePostProcessor mpp = message -> {
@@ -76,12 +94,44 @@ public class RabbitArkMqEventSubscriber implements ArkEventSubscriber, ArkMqEven
             }
             return message;
         };
-        if (args.containsKey(RabbitRPC.class.getName()) || ArkEventPlugin.isMqTransaction(args)) {
-            template.convertSendAndReceive(exchange.getName(), routingKeyProvider.getRoutingKey(),
+        if (ArkEventPlugin.isMqTransaction(args)) {
+            sendInTransaction(exchange.getName(), routingKeyProvider.getRoutingKey(),
                     encoder.encode(event), mpp);
         } else {
-            template.convertAndSend(exchange.getName(), routingKeyProvider.getRoutingKey(),
-                    encoder.encode(event), mpp);
+            if (args.containsKey(RabbitPublisherConfirms.class.getName())) {
+                sendInPublisherConfirms(exchange.getName(), routingKeyProvider.getRoutingKey(),
+                        encoder.encode(event), mpp, waitForConfirmsTimeout);
+            }
+            if (args.containsKey(RabbitRPC.class.getName())) {
+                sendInRPC(exchange.getName(), routingKeyProvider.getRoutingKey(),
+                        encoder.encode(event), mpp);
+            } else {
+                template.convertAndSend(exchange.getName(), routingKeyProvider.getRoutingKey(),
+                        encoder.encode(event), mpp);
+            }
         }
+    }
+
+    public void sendInTransaction(String exchange, String routingKey, final Object message,
+                                  final MessagePostProcessor messagePostProcessor) {
+        sendInPublisherConfirms(exchange, routingKey, message, messagePostProcessor,
+                waitForConfirmsTimeout);
+    }
+
+    public void sendInPublisherConfirms(String exchange, String routingKey, final Object message,
+                                        final MessagePostProcessor messagePostProcessor,
+                                        long waitForConfirmsTimeout) {
+        Boolean aux = publisherConfirmsTemplate.invoke(operations -> {
+            operations.convertAndSend(exchange, routingKey, message, messagePostProcessor);
+            return operations.waitForConfirms(waitForConfirmsTimeout);
+        });
+        if (!Boolean.TRUE.equals(aux)) {
+            throw new AmqpException("nacks received");
+        }
+    }
+
+    public void sendInRPC(String exchange, String routingKey, final Object message,
+                          final MessagePostProcessor messagePostProcessor) {
+        template.convertSendAndReceive(exchange, routingKey, message, messagePostProcessor);
     }
 }

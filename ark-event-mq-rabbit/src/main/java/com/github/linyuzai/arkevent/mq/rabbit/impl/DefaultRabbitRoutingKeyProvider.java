@@ -8,13 +8,13 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-public class DefaultRabbitArkMqEventRoutingKeyProvider implements RabbitArkMqEventRoutingKeyProvider {
+public class DefaultRabbitRoutingKeyProvider implements RabbitArkMqEventRoutingKeyProvider {
 
     private Set<String> routingKeys = new HashSet<>();
 
     private String routingKey;
 
-    public DefaultRabbitArkMqEventRoutingKeyProvider(ArkMqEventModuleIdProvider idProvider, ArkMqEventModulesProvider moduleProvider) {
+    public DefaultRabbitRoutingKeyProvider(ArkMqEventModuleIdProvider idProvider, ArkMqEventModulesProvider moduleProvider) {
         String lowerCaseModule = idProvider.getModuleId().toLowerCase();
         this.routingKey = getRoutingKey0(lowerCaseModule);
         for (String module : moduleProvider.getModules()) {

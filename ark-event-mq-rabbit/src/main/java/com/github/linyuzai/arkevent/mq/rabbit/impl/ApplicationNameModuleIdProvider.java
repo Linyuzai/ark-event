@@ -4,7 +4,7 @@ import com.github.linyuzai.arkevent.mq.ArkMqEventModuleIdProvider;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.Environment;
 
-public class ApplicationNameArkMqEventModuleIdProvider implements ArkMqEventModuleIdProvider, EnvironmentAware {
+public class ApplicationNameModuleIdProvider implements ArkMqEventModuleIdProvider, EnvironmentAware {
 
     private String applicationName;
 

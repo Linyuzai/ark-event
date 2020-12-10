@@ -6,6 +6,26 @@ import java.util.Map;
 
 public class ArkEventPlugin {
 
+    private static boolean mqEnabled = false;
+
+    private static boolean transactionEnabled = false;
+
+    public static boolean isMqEnabled() {
+        return mqEnabled;
+    }
+
+    public static void setMqEnabled(boolean mqEnabled) {
+        ArkEventPlugin.mqEnabled = mqEnabled;
+    }
+
+    public static boolean isTransactionEnabled() {
+        return transactionEnabled;
+    }
+
+    public static void setTransactionEnabled(boolean transactionEnabled) {
+        ArkEventPlugin.transactionEnabled = transactionEnabled;
+    }
+
     private static ArkEventPublisher publisher;
 
     public static void setPublisher(ArkEventPublisher publisher) {

@@ -1,5 +1,6 @@
-package com.github.linyuzai.arkevent.autoconfigure.configuration;
+package com.github.linyuzai.arkevent.autoconfigure;
 
+import com.github.linyuzai.arkevent.autoconfigure.configurer.ArkMqEventConfigurer;
 import com.github.linyuzai.arkevent.autoconfigure.decoder.JacksonMqEventDecoder;
 import com.github.linyuzai.arkevent.autoconfigure.encoder.JacksonMqEventEncoder;
 import com.github.linyuzai.arkevent.core.ArkEvent;
@@ -21,6 +22,7 @@ import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -67,10 +69,11 @@ public class ArkMqEventAutoConfiguration {
     @ConditionalOnMissingBean(RabbitArkMqEventRoutingKeyProvider.class)
     public RabbitArkMqEventRoutingKeyProvider rabbitArkMqEventRoutingKeyProvider(
             ArkMqEventModuleIdProvider idProvider, ArkMqEventModulesProvider moduleProvider) {
-        return new DefaultRabbitArkMqEventRoutingKeyProvider(idProvider, moduleProvider);
+        return new DefaultRabbitRoutingKeyProvider(idProvider, moduleProvider);
     }
 
     @Bean
+    @ConditionalOnBean(RabbitAdmin.class)
     public Object rabbitArkEventBinding(RabbitAdmin admin,
                                         RabbitArkMqEventTopicExchange exchange,
                                         RabbitArkMqEventQueue queue,
@@ -96,9 +99,15 @@ public class ArkMqEventAutoConfiguration {
     }
 
     @Bean
-    @ConditionalOnMissingBean(RabbitRPCArkEventArgsProcessor.class)
-    public RabbitRPCArkEventArgsProcessor rabbitRPCArkEventArgsProcessor() {
-        return new RabbitRPCArkEventArgsProcessor();
+    @ConditionalOnMissingBean(RabbitPublisherConfirmsArgsProcessor.class)
+    public RabbitPublisherConfirmsArgsProcessor rabbitPublisherConfirmsArkEventArgsProcessor() {
+        return new RabbitPublisherConfirmsArgsProcessor();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(RabbitRPCArgsProcessor.class)
+    public RabbitRPCArgsProcessor rabbitRPCArkEventArgsProcessor() {
+        return new RabbitRPCArgsProcessor();
     }
 
     @Bean
@@ -133,8 +142,8 @@ public class ArkMqEventAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(ArkMqEventModuleIdProvider.class)
-    public ApplicationNameArkMqEventModuleIdProvider applicationNameArkMqEventModuleIdProvider() {
-        return new ApplicationNameArkMqEventModuleIdProvider();
+    public ApplicationNameModuleIdProvider applicationNameArkMqEventModuleIdProvider() {
+        return new ApplicationNameModuleIdProvider();
     }
 
     @Bean
@@ -178,27 +187,36 @@ public class ArkMqEventAutoConfiguration {
             RabbitArkMqEventTopicExchange exchange,
             RabbitArkMqEventRoutingKeyProvider routingKeyProvider,
             ArkMqEventEncoder encoder,
-            List<RabbitArkMqEventMessagePostProcessor> messagePostProcessors) {
+            List<RabbitArkMqEventMessagePostProcessor> messagePostProcessors,
+            List<ArkMqEventConfigurer> configurers) {
         RabbitArkMqEventSubscriber subscriber = new RabbitArkMqEventSubscriber();
         subscriber.setTemplate(template);
         subscriber.setExchange(exchange);
         subscriber.setRoutingKeyProvider(routingKeyProvider);
         subscriber.setEncoder(encoder);
         subscriber.setMessagePostProcessors(messagePostProcessors);
+        for (ArkMqEventConfigurer configurer : configurers) {
+            configurer.onArkMqEventSubscriber(subscriber);
+        }
         return subscriber;
     }
 
     @Bean
-    @ConditionalOnMissingBean(RabbitArkMqEventMessageListener.class)
-    public RabbitArkMqEventMessageListener rabbitArkMqEventMessageListener(ArkMqEventIdempotentManager idempotentManager,
-                                                                           ArkEventTransactionManager transactionManager,
-                                                                           ArkMqEventDecoder decoder,
-                                                                           ArkMqEventExceptionHandler exceptionHandler) {
+    @ConditionalOnMissingBean(ArkMqEventMessageListener.class)
+    public RabbitArkMqEventMessageListener rabbitArkMqEventMessageListener(
+            ArkMqEventIdempotentManager idempotentManager,
+            ArkEventTransactionManager transactionManager,
+            ArkMqEventDecoder decoder,
+            ArkMqEventExceptionHandler exceptionHandler,
+            List<ArkMqEventConfigurer> configurers) {
         RabbitArkMqEventMessageListener listener = new RabbitArkMqEventMessageListener();
         listener.setTransactionManager(transactionManager);
         listener.setIdempotentManager(idempotentManager);
         listener.setDecoder(decoder);
         listener.setExceptionHandler(exceptionHandler);
+        for (ArkMqEventConfigurer configurer : configurers) {
+            configurer.onArkMqEventMessageListener(listener);
+        }
         return listener;
     }
 
@@ -207,11 +225,15 @@ public class ArkMqEventAutoConfiguration {
     public RabbitArkMqEventMessageListenerContainer rabbitArkMqEventMessageListenerContainer(
             RabbitArkMqEventQueue rabbitArkMqEventQueue,
             RabbitArkMqEventMessageListener listener,
-            ConnectionFactory connectionFactory) {
+            ConnectionFactory connectionFactory,
+            List<ArkMqEventConfigurer> configurers) {
         RabbitArkMqEventMessageListenerContainer container = new RabbitArkMqEventMessageListenerContainer();
         container.setConnectionFactory(connectionFactory);
         container.setQueueNames(rabbitArkMqEventQueue.getName());
         container.setMessageListener(listener);
+        for (ArkMqEventConfigurer configurer : configurers) {
+            configurer.onRabbitMessageListenerContainer(container);
+        }
         return container;
     }
 }

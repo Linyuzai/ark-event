@@ -1,8 +1,10 @@
-package com.github.linyuzai.arkevent.autoconfigure;
+package com.github.linyuzai.arkevent.autoconfigure.selector;
 
-import com.github.linyuzai.arkevent.autoconfigure.configuration.ArkEventAutoConfiguration;
-import com.github.linyuzai.arkevent.autoconfigure.configuration.ArkEventTransactionAutoConfiguration;
-import com.github.linyuzai.arkevent.autoconfigure.configuration.ArkMqEventAutoConfiguration;
+import com.github.linyuzai.arkevent.autoconfigure.ArkEventAutoConfiguration;
+import com.github.linyuzai.arkevent.autoconfigure.ArkEventTransactionAutoConfiguration;
+import com.github.linyuzai.arkevent.autoconfigure.ArkMqEventAutoConfiguration;
+import com.github.linyuzai.arkevent.autoconfigure.EnableArkEvent;
+import com.github.linyuzai.arkevent.support.ArkEventPlugin;
 import org.springframework.context.annotation.DeferredImportSelector;
 import org.springframework.core.type.AnnotationMetadata;
 
@@ -22,12 +24,14 @@ public class ArkEventConfigurationSelector implements DeferredImportSelector {
         if (event) {
             names.add(ArkEventAutoConfiguration.class.getName());
             if (mq) {
+                ArkEventPlugin.setMqEnabled(true);
                 names.add(ArkMqEventAutoConfiguration.class.getName());
                 if (!transaction) {
                     names.add(ArkMqEventAutoConfiguration.TransactionAutoConfiguration.class.getName());
                 }
             }
             if (transaction) {
+                ArkEventPlugin.setTransactionEnabled(true);
                 names.add(ArkEventTransactionAutoConfiguration.class.getName());
             }
         }

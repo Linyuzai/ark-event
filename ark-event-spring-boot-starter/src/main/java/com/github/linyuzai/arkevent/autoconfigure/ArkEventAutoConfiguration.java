@@ -1,4 +1,4 @@
-package com.github.linyuzai.arkevent.autoconfigure.configuration;
+package com.github.linyuzai.arkevent.autoconfigure;
 
 import com.github.linyuzai.arkevent.autoconfigure.listener.DefaultArkEventPublishListener;
 import com.github.linyuzai.arkevent.core.*;

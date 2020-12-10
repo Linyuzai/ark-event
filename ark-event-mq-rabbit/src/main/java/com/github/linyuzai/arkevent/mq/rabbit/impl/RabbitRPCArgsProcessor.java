@@ -6,7 +6,7 @@ import com.github.linyuzai.arkevent.mq.rabbit.RabbitRPC;
 
 import java.util.Map;
 
-public class RabbitRPCArkEventArgsProcessor implements ArkEventArgsProcessor {
+public class RabbitRPCArgsProcessor implements ArkEventArgsProcessor {
 
     @Override
     public void process(ArkEvent event, Map<Object, Object> args) {
