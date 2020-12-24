@@ -4,12 +4,13 @@ import com.github.linyuzai.arkevent.autoconfigure.listener.DefaultArkEventPublis
 import com.github.linyuzai.arkevent.core.*;
 import com.github.linyuzai.arkevent.core.impl.DefaultArkEventPublisher;
 import com.github.linyuzai.arkevent.core.impl.filter.condition.expression.ExpressionArkEventConditionFilterFactory;
-import com.github.linyuzai.arkevent.support.ArkEventPlugin;
+import com.github.linyuzai.arkevent.core.impl.filter.condition.local.LocalArkEventConditionFilterFactory;
 import com.github.linyuzai.arkevent.core.impl.filter.condition.group.GroupArkEventConditionFilterFactory;
 import com.github.linyuzai.arkevent.core.impl.filter.condition.type.TypeArkEventConditionFilterFactory;
 import com.github.linyuzai.arkevent.core.impl.handler.exception.logger.Slf4jArkEventExceptionHandlerAdapter;
 import com.github.linyuzai.arkevent.core.impl.handler.exception.rethrow.RethrowArkEventExceptionHandlerAdapter;
 import com.github.linyuzai.arkevent.core.impl.strategy.publish.SimpleArkEventPublishStrategyAdapter;
+import com.github.linyuzai.arkevent.support.ArkEventPlugin;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 
@@ -33,6 +34,12 @@ public class ArkEventAutoConfiguration {
     @ConditionalOnMissingBean(ExpressionArkEventConditionFilterFactory.class)
     public ExpressionArkEventConditionFilterFactory expressionArkEventConditionFilterFactory() {
         return new ExpressionArkEventConditionFilterFactory();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(LocalArkEventConditionFilterFactory.class)
+    public LocalArkEventConditionFilterFactory localArkEventConditionFilterFactory() {
+        return new LocalArkEventConditionFilterFactory();
     }
 
     @Bean
