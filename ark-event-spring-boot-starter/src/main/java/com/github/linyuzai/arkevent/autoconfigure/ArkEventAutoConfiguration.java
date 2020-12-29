@@ -3,6 +3,7 @@ package com.github.linyuzai.arkevent.autoconfigure;
 import com.github.linyuzai.arkevent.autoconfigure.listener.DefaultArkEventPublishListener;
 import com.github.linyuzai.arkevent.core.*;
 import com.github.linyuzai.arkevent.core.impl.DefaultArkEventPublisher;
+import com.github.linyuzai.arkevent.core.impl.filter.condition.compose.AnnotationComposeConditionFilterFactory;
 import com.github.linyuzai.arkevent.core.impl.filter.condition.expression.ExpressionArkEventConditionFilterFactory;
 import com.github.linyuzai.arkevent.core.impl.filter.condition.local.LocalArkEventConditionFilterFactory;
 import com.github.linyuzai.arkevent.core.impl.filter.condition.group.GroupArkEventConditionFilterFactory;
@@ -14,6 +15,7 @@ import com.github.linyuzai.arkevent.support.ArkEventPlugin;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 
+import java.util.Arrays;
 import java.util.List;
 
 public class ArkEventAutoConfiguration {
@@ -40,6 +42,20 @@ public class ArkEventAutoConfiguration {
     @ConditionalOnMissingBean(LocalArkEventConditionFilterFactory.class)
     public LocalArkEventConditionFilterFactory localArkEventConditionFilterFactory() {
         return new LocalArkEventConditionFilterFactory();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(AnnotationComposeConditionFilterFactory.class)
+    public AnnotationComposeConditionFilterFactory annotationComposeConditionFilterFactory(
+            TypeArkEventConditionFilterFactory typeArkEventConditionFilterFactory,
+            GroupArkEventConditionFilterFactory groupArkEventConditionFilterFactory,
+            ExpressionArkEventConditionFilterFactory expressionArkEventConditionFilterFactory,
+            LocalArkEventConditionFilterFactory localArkEventConditionFilterFactory) {
+        return new AnnotationComposeConditionFilterFactory(Arrays.asList(
+                typeArkEventConditionFilterFactory,
+                groupArkEventConditionFilterFactory,
+                expressionArkEventConditionFilterFactory,
+                localArkEventConditionFilterFactory));
     }
 
     @Bean
