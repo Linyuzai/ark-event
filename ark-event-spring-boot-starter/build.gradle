@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'com.github.linyuzai'
-version = '0.5.2'//20201229
+version = '0.6.0'//20210106
 sourceCompatibility = '1.8'
 
 repositories {

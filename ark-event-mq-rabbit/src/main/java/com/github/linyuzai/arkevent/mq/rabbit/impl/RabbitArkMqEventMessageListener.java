@@ -83,7 +83,7 @@ public class RabbitArkMqEventMessageListener implements ArkMqEventMessageListene
             } else {
                 Map<Object, Object> args = new HashMap<>();
                 args.put(ArkEventPlugin.ARGS_REMOTE_KEY, "mq");
-                decoder.decode(message).publish(args);
+                ArkEventPlugin.getPublisher().publish(decoder.decode(message), args);
             }
             if (channelHandler != null) {
                 channelHandler.onMessageHandled(message, channel);

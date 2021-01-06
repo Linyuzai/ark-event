@@ -6,5 +6,5 @@ import java.util.Map;
 
 public interface ArkEventArgsProcessor extends Order {
 
-    void process(ArkEvent event, Map<Object, Object> args);
+    void process(Object event, Map<Object, Object> args);
 }

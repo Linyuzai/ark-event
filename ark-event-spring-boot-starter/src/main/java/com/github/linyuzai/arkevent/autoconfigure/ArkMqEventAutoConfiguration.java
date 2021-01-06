@@ -3,7 +3,6 @@ package com.github.linyuzai.arkevent.autoconfigure;
 import com.github.linyuzai.arkevent.autoconfigure.configurer.ArkMqEventConfigurer;
 import com.github.linyuzai.arkevent.autoconfigure.decoder.JacksonMqEventDecoder;
 import com.github.linyuzai.arkevent.autoconfigure.encoder.JacksonMqEventEncoder;
-import com.github.linyuzai.arkevent.core.ArkEvent;
 import com.github.linyuzai.arkevent.mq.*;
 import com.github.linyuzai.arkevent.mq.impl.filter.condition.ArkMqEventConditionFilterFactory;
 import com.github.linyuzai.arkevent.mq.impl.handler.exception.ArkMqEventExceptionHandler;
@@ -152,7 +151,7 @@ public class ArkMqEventAutoConfiguration {
         return new AnnotationArkMqEventIdempotentManager() {
 
             @Override
-            public String getIdempotentEventId(ArkEvent event, Map<Object, Object> args) {
+            public String getIdempotentEventId(Object event, Map<Object, Object> args) {
                 return EVENT_IDEMPOTENT_IGNORED;
             }
 

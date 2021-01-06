@@ -1,6 +1,5 @@
 package com.github.linyuzai.arkevent.mq.impl.manager.idempotent;
 
-import com.github.linyuzai.arkevent.core.ArkEvent;
 import com.github.linyuzai.arkevent.mq.ArkMqEventDecoder;
 import com.github.linyuzai.arkevent.mq.ArkMqEventIdempotentManager;
 
@@ -11,7 +10,7 @@ public abstract class AnnotationArkMqEventIdempotentManager implements ArkMqEven
     public static final String EVENT_IDEMPOTENT_IGNORED = "ArkMqEvent@IdempotentIgnored";
 
     @Override
-    public String getEventId(ArkEvent event, Map<Object, Object> args) {
+    public String getEventId(Object event, Map<Object, Object> args) {
         if (event.getClass().isAnnotationPresent(EventIdempotent.class)) {
             return getIdempotentEventId(event, args);
         }
@@ -26,7 +25,7 @@ public abstract class AnnotationArkMqEventIdempotentManager implements ArkMqEven
         return isIdempotentEventHandled(eventId, decoder, o);
     }
 
-    public abstract String getIdempotentEventId(ArkEvent event, Map<Object, Object> args);
+    public abstract String getIdempotentEventId(Object event, Map<Object, Object> args);
 
     public abstract boolean isIdempotentEventHandled(String eventId, ArkMqEventDecoder decoder, Object o);
 }

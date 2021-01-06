@@ -6,7 +6,7 @@ public class ArkEventException extends RuntimeException {
 
     private ArkEventSubscriber subscriber;
     private ArkEventPublishStrategy strategy;
-    private ArkEvent event;
+    private Object event;
     private Map<Object, Object> args;
 
     public ArkEventException(Throwable cause, Map<Object, Object> args) {
@@ -15,7 +15,7 @@ public class ArkEventException extends RuntimeException {
     }
 
     public ArkEventException(Throwable cause, ArkEventSubscriber subscriber, ArkEventPublishStrategy strategy,
-                             ArkEvent event, Map<Object, Object> args) {
+                             Object event, Map<Object, Object> args) {
         super(cause);
         this.subscriber = subscriber;
         this.strategy = strategy;
@@ -58,11 +58,11 @@ public class ArkEventException extends RuntimeException {
         return strategy;
     }
 
-    public void setEvent(ArkEvent event) {
+    public void setEvent(Object event) {
         this.event = event;
     }
 
-    public ArkEvent getEvent() {
+    public Object getEvent() {
         return event;
     }
 

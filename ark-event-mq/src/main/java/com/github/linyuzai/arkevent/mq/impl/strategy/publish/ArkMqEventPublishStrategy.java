@@ -1,6 +1,5 @@
 package com.github.linyuzai.arkevent.mq.impl.strategy.publish;
 
-import com.github.linyuzai.arkevent.core.ArkEvent;
 import com.github.linyuzai.arkevent.core.ArkEventPublishStrategy;
 import com.github.linyuzai.arkevent.core.ArkEventSubscriber;
 import com.github.linyuzai.arkevent.mq.impl.filter.condition.ArkMqEvent;
@@ -19,7 +18,7 @@ public class ArkMqEventPublishStrategy implements ArkEventPublishStrategy {
     }
 
     @Override
-    public void implement(ArkEventSubscriber subscriber, ArkEvent event, Map<Object, Object> args) throws Throwable {
+    public void implement(ArkEventSubscriber subscriber, Object event, Map<Object, Object> args) throws Throwable {
         boolean transaction = ifTransaction(event) && transactionManager.isInTransaction(event, args);
         if (transaction) {
             args.put(ArkEventPlugin.ARGS_MQ_TRANSACTION_KEY, true);
@@ -27,7 +26,7 @@ public class ArkMqEventPublishStrategy implements ArkEventPublishStrategy {
         subscriber.onSubscribe(event, args);
     }
 
-    private boolean ifTransaction(ArkEvent event) {
+    private boolean ifTransaction(Object event) {
         if (event instanceof ArkMqEvent) {
             return ((ArkMqEvent) event).transaction();
         } else {

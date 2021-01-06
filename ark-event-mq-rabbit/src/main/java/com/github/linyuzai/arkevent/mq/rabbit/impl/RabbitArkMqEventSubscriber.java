@@ -1,6 +1,5 @@
 package com.github.linyuzai.arkevent.mq.rabbit.impl;
 
-import com.github.linyuzai.arkevent.core.ArkEvent;
 import com.github.linyuzai.arkevent.core.ArkEventSubscriber;
 import com.github.linyuzai.arkevent.mq.*;
 import com.github.linyuzai.arkevent.mq.rabbit.*;
@@ -85,7 +84,7 @@ public class RabbitArkMqEventSubscriber implements ArkEventSubscriber, ArkMqEven
     }
 
     @Override
-    public void onSubscribe(ArkEvent event, Map<Object, Object> args) throws Throwable {
+    public void onSubscribe(Object event, Map<Object, Object> args) throws Throwable {
         final MessagePostProcessor mpp = message -> {
             if (messagePostProcessors != null) {
                 for (RabbitArkMqEventMessagePostProcessor p : messagePostProcessors) {

@@ -6,7 +6,7 @@ import java.util.Map;
 
 public interface ArkEventConditionFilter extends Order {
 
-    boolean filter(ArkEventSubscriber subscriber, ArkEvent event, Map<Object, Object> args);
+    boolean filter(ArkEventSubscriber subscriber, Object event, Map<Object, Object> args);
 
     interface Factory {
 

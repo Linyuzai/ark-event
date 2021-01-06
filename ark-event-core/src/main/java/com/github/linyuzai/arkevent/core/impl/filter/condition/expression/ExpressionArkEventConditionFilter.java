@@ -1,6 +1,5 @@
 package com.github.linyuzai.arkevent.core.impl.filter.condition.expression;
 
-import com.github.linyuzai.arkevent.core.ArkEvent;
 import com.github.linyuzai.arkevent.core.ArkEventConditionFilter;
 import com.github.linyuzai.arkevent.core.ArkEventSubscriber;
 import com.googlecode.aviator.AviatorEvaluator;
@@ -18,7 +17,7 @@ public class ExpressionArkEventConditionFilter implements ArkEventConditionFilte
     }
 
     @Override
-    public boolean filter(ArkEventSubscriber subscriber, ArkEvent event, Map<Object, Object> args) {
+    public boolean filter(ArkEventSubscriber subscriber, Object event, Map<Object, Object> args) {
         Map<String, Object> env = new HashMap<>();
         env.put("$event", event);
         env.put("$args", args);

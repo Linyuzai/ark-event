@@ -1,7 +1,6 @@
 package com.github.linyuzai.arkevent.autoconfigure.encoder;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.linyuzai.arkevent.core.ArkEvent;
 import com.github.linyuzai.arkevent.mq.rabbit.RabbitArkMqEventEncoder;
 
 import java.util.HashMap;
@@ -20,7 +19,7 @@ public class JacksonMqEventEncoder extends RabbitArkMqEventEncoder {
     }
 
     @Override
-    public byte[] encodeEvent(ArkEvent event) throws Throwable {
+    public byte[] encodeEvent(Object event) throws Throwable {
         Map<String, Object> map = new HashMap<>();
         map.put("className", event.getClass().getName());
         map.put("content", event);

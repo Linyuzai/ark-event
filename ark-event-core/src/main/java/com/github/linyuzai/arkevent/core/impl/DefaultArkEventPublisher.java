@@ -272,7 +272,7 @@ public class DefaultArkEventPublisher implements ArkEventPublisher {
     }
 
     @Override
-    public void publish(ArkEvent event, Map<Object, Object> args) {
+    public void publish(Object event, Map<Object, Object> args) {
 
         Map<Object, Object> nonNullArgs = new LinkedHashMap<>();
         if (args != null) {
@@ -362,7 +362,7 @@ public class DefaultArkEventPublisher implements ArkEventPublisher {
 
     private boolean filterSubscriber(Collection<ArkEventConditionFilter> filters,
                                      ArkEventSubscriber subscriber,
-                                     ArkEvent event, Map<Object, Object> args) {
+                                     Object event, Map<Object, Object> args) {
         if (filters == null) {
             return false;
         }
@@ -372,37 +372,5 @@ public class DefaultArkEventPublisher implements ArkEventPublisher {
             }
         }
         return true;
-    }
-
-    @Deprecated
-    public static class PublishExecutor {
-
-        private ArkEventPublishStrategy strategy;
-
-        private ArkEventSubscriber subscriber;
-
-        private ArkEventExceptionHandler handler;
-
-        private ArkEvent event;
-
-        private Map<Object, Object> args;
-
-        public PublishExecutor(ArkEventSubscriber subscriber, ArkEventPublishStrategy strategy,
-                               ArkEventExceptionHandler handler, ArkEvent event, Map<Object, Object> args) {
-            this.subscriber = subscriber;
-            this.strategy = strategy;
-            this.handler = handler;
-            this.event = event;
-            this.args = args;
-        }
-
-        public void exec() {
-            try {
-                strategy.implement(subscriber, event, args);
-            } catch (Throwable e) {
-                ArkEventException aee = new ArkEventException(e, subscriber, strategy, event, args);
-                handler.handle(aee);
-            }
-        }
     }
 }

@@ -1,6 +1,5 @@
 package com.github.linyuzai.arkevent.mq.rabbit.impl;
 
-import com.github.linyuzai.arkevent.core.ArkEvent;
 import com.github.linyuzai.arkevent.mq.ArkMqEventIdempotentManager;
 import com.github.linyuzai.arkevent.mq.rabbit.RabbitArkMqEventMessagePostProcessor;
 import com.github.linyuzai.arkevent.support.ArkEventPlugin;
@@ -25,7 +24,7 @@ public class EventIdMessagePostProcessor implements RabbitArkMqEventMessagePostP
     }
 
     @Override
-    public void postMessage(Message message, ArkEvent event, Map<Object, Object> args) {
+    public void postMessage(Message message, Object event, Map<Object, Object> args) {
         String eventId = idempotentManager.getEventId(event, args);
         message.getMessageProperties().setHeader(ArkEventPlugin.HEADER_EVENT_ID, eventId);
     }

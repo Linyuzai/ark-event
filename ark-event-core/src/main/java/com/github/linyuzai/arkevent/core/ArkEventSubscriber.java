@@ -6,5 +6,5 @@ import java.util.Map;
 
 public interface ArkEventSubscriber extends Order {
 
-    void onSubscribe(ArkEvent event, Map<Object, Object> args) throws Throwable;
+    void onSubscribe(Object event, Map<Object, Object> args) throws Throwable;
 }
