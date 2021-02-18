@@ -13,7 +13,7 @@ public class DefaultArkEventPublishListener implements ArkEventPublishListener {
 
     private static final Logger log = LoggerFactory.getLogger(DefaultArkEventPublishListener.class);
 
-    private static final String TAG = "【ArkEvent】";
+    private static final String TAG = "Ark event >> ";
 
     public String getObjectName(Object object) {
         return object.getClass().getSimpleName();
