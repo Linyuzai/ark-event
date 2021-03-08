@@ -3,7 +3,7 @@ plugins {
 }
 
 group 'com.github.linyuzai'
-version '0.6.0'//20210106
+version '0.6.2'//20210106
 
 sourceCompatibility = 1.8
 
@@ -13,6 +13,88 @@ repositories {
 
 dependencies {
     compileOnly 'org.slf4j:slf4j-api:1.7.25'
-    implementation project(':ark-event-core')
+    compileOnly project(':ark-event-core')
     testCompile group: 'junit', name: 'junit', version: '4.12'
+}
+
+apply from: '../sonatype.gradle'
+
+apply plugin: 'maven-publish'
+apply plugin: 'signing'
+
+task sourcesJar(type: Jar) {
+    from sourceSets.main.allJava
+    classifier = 'sources'
+}
+
+task javadocJar(type: Jar) {
+    from javadoc
+    classifier = 'javadoc'
+}
+
+
+publishing {
+    // 定义发布什么
+    publications {
+        mavenJava(MavenPublication) {
+            // groupId = project.group
+            // artifactId = project.name
+            // version = project.version
+            // groupId,artifactId,version，如果不定义，则会按照以上默认值执行
+            from components.java
+            //artifact makeJar
+            artifact sourcesJar
+            artifact javadocJar
+            pom {
+                // 构件名称
+                // 区别于artifactId，可以理解为artifactName
+                name = 'Ark event transaction'
+                // 构件描述
+                description = 'Ark event transaction'
+                // 构件主页
+                url = 'https://github.com/Linyuzai/ark-event'
+                // 许可证名称和地址
+                licenses {
+                    license {
+                        name = 'The Apache License, Version 2.0'
+                        url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+                // 开发者信息
+                developers {
+                    developer {
+                        name = '黑白法师'
+                        email = '120718461@qq.com'
+                    }
+                }
+                // 版本控制仓库地址
+                scm {
+                    url = 'https://github.com/Linyuzai/ark-event'
+                    connection = 'scm:git:git://github.com/Linyuzai/ark-event.git'
+                    developerConnection = 'scm:git:ssh://git@github.com:Linyuzai/ark-event.git'
+                }
+            }
+        }
+    }
+    // 定义发布到哪里
+    repositories {
+        maven {
+            url "https://oss.sonatype.org/service/local/staging/deploy/maven2"
+            credentials {
+                // 这里就是之前在issues.sonatype.org注册的账号
+                username sonatypeUsername
+                password sonatypePassword
+            }
+        }
+    }
+}
+
+signing {
+    sign publishing.publications.mavenJava
+}
+
+javadoc {
+    // <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    // 防止本地打开中文乱码
+    options.addStringOption("charset", "UTF-8")
 }

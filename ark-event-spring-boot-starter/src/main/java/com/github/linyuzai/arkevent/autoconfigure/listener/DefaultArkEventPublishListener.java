@@ -53,14 +53,14 @@ public class DefaultArkEventPublishListener implements ArkEventPublishListener {
 
     @Override
     public void onPublishStarted(Object event, Map<Object, Object> args) {
-        log.info("{} {} start publish with args {}",
+        log.info("{} '{}' start publish with args {}",
                 TAG, getEventName(event), args);
     }
 
     @Override
     public void onEventArgsProcessed(Collection<? extends ArkEventArgsProcessor> argsProcessors,
                                      Object event, Map<Object, Object> args) {
-        log.info("{} Args processed {} on event {} with args {}",
+        log.info("{} Args processed {} on event '{}' with args {}",
                 TAG, getArgsProcessorsName(argsProcessors), getEventName(event), args);
     }
 
@@ -68,7 +68,7 @@ public class DefaultArkEventPublishListener implements ArkEventPublishListener {
     public void onEachSubscriberConditionsFiltered(boolean filter, ArkEventSubscriber subscriber,
                                                    Collection<? extends ArkEventConditionFilter> filters,
                                                    Object event, Map<Object, Object> args) {
-        log.info("{} Conditions {} on subscriber {} {} event {} with args {}",
+        log.info("{} Conditions {} on subscriber '{}' {} event '{}' with args {}",
                 TAG, getFiltersName(filters), getSubscriberName(subscriber),
                 filter ? "matched" : "not matched", getEventName(event), args);
     }
@@ -76,7 +76,7 @@ public class DefaultArkEventPublishListener implements ArkEventPublishListener {
     @Override
     public void onSubscribersFiltered(Collection<? extends ArkEventSubscriber> subscribers,
                                       Object event, Map<Object, Object> args) {
-        log.info("{} {} subscribers {} matched event {} with args {}",
+        log.info("{} {} subscribers {} matched event '{}' with args {}",
                 TAG, subscribers.size(), getSubscribersName(subscribers), getEventName(event), args);
     }
 
@@ -84,7 +84,7 @@ public class DefaultArkEventPublishListener implements ArkEventPublishListener {
     public void onEachSubscriberPublishStrategyAdapted(ArkEventPublishStrategy strategy,
                                                        ArkEventSubscriber subscriber,
                                                        Object event, Map<Object, Object> args) {
-        log.info("{} Publish strategy {} adapted subscriber {} on event {} with args {}",
+        log.info("{} Publish strategy '{}' adapted subscriber '{}' on event '{}' with args {}",
                 TAG, getStrategyName(strategy), getSubscriberName(subscriber), getEventName(event), args);
     }
 
@@ -92,19 +92,19 @@ public class DefaultArkEventPublishListener implements ArkEventPublishListener {
     public void onEachSubscriberExceptionHandlerAdapted(ArkEventExceptionHandler handler,
                                                         ArkEventSubscriber subscriber,
                                                         Object event, Map<Object, Object> args) {
-        log.info("{} Exception handler {} adapted subscriber {} on event {} with args {}",
+        log.info("{} Exception handler '{}' adapted subscriber '{}' on event '{}' with args {}",
                 TAG, getHandlerName(handler), getSubscriberName(subscriber), getEventName(event), args);
     }
 
     @Override
     public void onPublishCompleted(Object event, Map<Object, Object> args) {
-        log.info("{} Event {} complete publish with args {}",
+        log.info("{} Event '{}' publish completed with args {}",
                 TAG, getEventName(event), args);
     }
 
     @Override
     public void onPublishError(Throwable e, Object event, Map<Object, Object> args) {
-        log.error("{} Event {} publish error {} with args {}",
+        log.error("{} Event '{}' publish error '{}' with args {}",
                 TAG, getEventName(event), e.getMessage(), args);
     }
 }
