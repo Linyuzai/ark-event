@@ -34,7 +34,7 @@ apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
 
 group = 'com.github.linyuzai'
-version = '0.6.2'//20210106
+version = '0.6.3'//20210308
 sourceCompatibility = '1.8'
 
 repositories {
