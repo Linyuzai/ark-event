@@ -2,6 +2,8 @@ package com.github.linyuzai.arkevent.support;
 
 public interface Order {
 
+    int CONDITION_FILTER_EXPRESSION = 10;
+
     int PUBLISH_STRATEGY_ADAPTER_TRANSACTION = -20;
     int PUBLISH_STRATEGY_ADAPTER_MQ = -10;
     int PUBLISH_STRATEGY_ADAPTER_SIMPLE = 0;

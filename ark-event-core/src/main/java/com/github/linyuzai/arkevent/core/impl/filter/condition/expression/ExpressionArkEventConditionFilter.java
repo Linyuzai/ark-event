@@ -32,4 +32,9 @@ public class ExpressionArkEventConditionFilter implements ArkEventConditionFilte
             return false;
         }
     }
+
+    @Override
+    public int order() {
+        return CONDITION_FILTER_EXPRESSION;
+    }
 }
