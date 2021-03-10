@@ -333,7 +333,13 @@ public class DefaultArkEventPublisher implements ArkEventPublisher {
             //executors.add(new PublishExecutor(filterSubscriber, strategy, handler, event, nonNullArgs));
             try {
                 try {
-                    strategy.implement(filterSubscriber, event, nonNullArgs);
+                    //返回值用于兼容多策略处理
+                    boolean apply = strategy.apply(filterSubscriber, event, nonNullArgs);
+                    if (apply) {
+                        //已经执行
+                    } else {
+                        filterSubscriber.onSubscribe(event, nonNullArgs);
+                    }
                 } catch (Throwable e) {
                     ArkEventException aee = new ArkEventException(e, filterSubscriber, strategy, event, nonNullArgs);
                     handler.handle(aee);

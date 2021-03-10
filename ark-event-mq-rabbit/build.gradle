@@ -3,8 +3,7 @@ buildscript {
         springBootVersion = '2.4.0'
     }
     repositories {
-        //mavenCentral()
-        maven { url "http://maven.aliyun.com/nexus/content/groups/public/" }
+        maven { url "https://maven.aliyun.com/nexus/content/groups/public/" }
         maven { url "https://maven.aliyun.com/repository/central" }
         maven { url "https://maven.aliyun.com/repository/google" }
         maven { url "https://maven.aliyun.com/repository/gradle-plugin" }
@@ -18,6 +17,7 @@ buildscript {
         maven { url "https://maven.aliyun.com/repository/mapr-public" }
         maven { url "https://maven.aliyun.com/repository/apache-snapshots" }
         maven { url "https://repo.spring.io/milestone" }
+        mavenCentral()
     }
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
@@ -34,12 +34,11 @@ apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
 
 group = 'com.github.linyuzai'
-version = '0.6.3'//20210308
+version = '0.7.0'//20210310
 sourceCompatibility = '1.8'
 
 repositories {
-    //mavenCentral()
-    maven { url "http://maven.aliyun.com/nexus/content/groups/public/" }
+    maven { url "https://maven.aliyun.com/nexus/content/groups/public/" }
     maven { url "https://maven.aliyun.com/repository/central" }
     maven { url "https://maven.aliyun.com/repository/google" }
     maven { url "https://maven.aliyun.com/repository/gradle-plugin" }
@@ -53,6 +52,7 @@ repositories {
     maven { url "https://maven.aliyun.com/repository/mapr-public" }
     maven { url "https://maven.aliyun.com/repository/apache-snapshots" }
     maven { url "https://repo.spring.io/milestone" }
+    mavenCentral()
 }
 
 dependencies {

@@ -18,12 +18,12 @@ public class ArkMqEventPublishStrategy implements ArkEventPublishStrategy {
     }
 
     @Override
-    public void implement(ArkEventSubscriber subscriber, Object event, Map<Object, Object> args) throws Throwable {
+    public boolean apply(ArkEventSubscriber subscriber, Object event, Map<Object, Object> args) throws Throwable {
         boolean transaction = ifTransaction(event) && transactionManager.isInTransaction(event, args);
         if (transaction) {
             args.put(ArkEventPlugin.ARGS_MQ_TRANSACTION_KEY, true);
         }
-        subscriber.onSubscribe(event, args);
+        return false;
     }
 
     private boolean ifTransaction(Object event) {

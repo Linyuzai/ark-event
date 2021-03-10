@@ -8,7 +8,7 @@ import java.util.Map;
 public class TransactionArkEventPublishStrategy implements ArkEventPublishStrategy {
 
     @Override
-    public void implement(ArkEventSubscriber subscriber, Object event, Map<Object, Object> args) throws Throwable {
-        subscriber.onSubscribe(event, args);
+    public boolean apply(ArkEventSubscriber subscriber, Object event, Map<Object, Object> args) throws Throwable {
+        return false;
     }
 }

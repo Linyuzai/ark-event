@@ -26,5 +26,7 @@ repositories {
 }
 
 dependencies {
+    compileOnly "io.reactivex.rxjava3:rxjava:3.0.11"
+    compileOnly project(':ark-event-core')
     testCompile group: 'junit', name: 'junit', version: '4.12'
 }
