@@ -31,6 +31,7 @@ dependencies {
     compileOnly 'org.springframework.boot:spring-boot-starter-amqp'
     compileOnly project(':ark-event-core')
     compileOnly project(':ark-event-transaction')
+    compileOnly project(':ark-event-rxjava3')
     compileOnly project(':ark-event-mq')
     compileOnly project(':ark-event-mq-rabbit')
     //implementation fileTree(dir: 'lib', includes: ['*.jar'])

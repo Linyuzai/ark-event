@@ -1,7 +1,6 @@
 package com.github.linyuzai.arkevent.autoconfigure;
 
 import com.github.linyuzai.arkevent.autoconfigure.transaction.StringArkEventTransactionManager;
-import com.github.linyuzai.arkevent.core.*;
 import com.github.linyuzai.arkevent.transaction.impl.handler.exception.TransactionArkEventExceptionHandler;
 import com.github.linyuzai.arkevent.transaction.impl.handler.exception.TransactionArkEventExceptionHandlerAdapter;
 import com.github.linyuzai.arkevent.transaction.impl.sorter.publish.TransactionArkEventPublishSorter;

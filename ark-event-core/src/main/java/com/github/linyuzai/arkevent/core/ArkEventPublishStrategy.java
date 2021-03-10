@@ -6,7 +6,7 @@ import java.util.Map;
 
 public interface ArkEventPublishStrategy {
 
-    boolean apply(ArkEventSubscriber subscriber, Object event, Map<Object, Object> args) throws Throwable;
+    void apply(ArkEventSubscriber subscriber, Object event, Map<Object, Object> args) throws Throwable;
 
     interface Adapter extends Order {
 

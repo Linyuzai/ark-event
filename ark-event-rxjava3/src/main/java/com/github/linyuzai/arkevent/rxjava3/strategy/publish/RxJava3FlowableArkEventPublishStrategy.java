@@ -29,9 +29,8 @@ public class RxJava3FlowableArkEventPublishStrategy implements ArkEventPublishSt
     }
 
     @Override
-    public boolean apply(ArkEventSubscriber subscriber, Object event, Map<Object, Object> args) throws Throwable {
+    public void apply(ArkEventSubscriber subscriber, Object event, Map<Object, Object> args) throws Throwable {
         emitter.onNext(new ArkEventArgsPair(event, args));
-        return true;
     }
 
 

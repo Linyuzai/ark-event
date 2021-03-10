@@ -3,6 +3,8 @@ include ':ark-event-core'
 project(':ark-event-core').projectDir = new File(settingsDir, '../ark-event-core')
 include ':ark-event-transaction'
 project(':ark-event-transaction').projectDir = new File(settingsDir, '../ark-event-transaction')
+include ':ark-event-rxjava3'
+project(':ark-event-rxjava3').projectDir = new File(settingsDir, '../ark-event-rxjava3')
 include ':ark-event-mq'
 project(':ark-event-mq').projectDir = new File(settingsDir, '../ark-event-mq')
 include ':ark-event-mq-rabbit'

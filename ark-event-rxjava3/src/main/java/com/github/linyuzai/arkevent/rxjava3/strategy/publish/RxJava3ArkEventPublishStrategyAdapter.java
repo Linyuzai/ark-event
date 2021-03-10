@@ -19,6 +19,6 @@ public class RxJava3ArkEventPublishStrategyAdapter implements ArkEventPublishStr
 
     @Override
     public int order() {
-        return PUBLISH_STRATEGY_ADAPTER_MQ;
+        return PUBLISH_STRATEGY_ADAPTER_RXJAVA3;
     }
 }

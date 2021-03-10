@@ -310,7 +310,6 @@ public class DefaultArkEventPublisher implements ArkEventPublisher {
             publishListener.onSubscribersFiltered(filterSubscribers, event, nonNullArgs);
         }
 
-        //List<PublishExecutor> executors = new ArrayList<>();
         for (ArkEventSubscriber filterSubscriber : filterSubscribers) {
             ArkEventPublishStrategy strategy = subscriberPublishStrategyMap.get(filterSubscriber);
             if (strategy == null) {
@@ -330,16 +329,9 @@ public class DefaultArkEventPublisher implements ArkEventPublisher {
                 publishListener.onEachSubscriberExceptionHandlerAdapted(handler, filterSubscriber, event, nonNullArgs);
             }
 
-            //executors.add(new PublishExecutor(filterSubscriber, strategy, handler, event, nonNullArgs));
             try {
                 try {
-                    //返回值用于兼容多策略处理
-                    boolean apply = strategy.apply(filterSubscriber, event, nonNullArgs);
-                    if (apply) {
-                        //已经执行
-                    } else {
-                        filterSubscriber.onSubscribe(event, nonNullArgs);
-                    }
+                    strategy.apply(filterSubscriber, event, nonNullArgs);
                 } catch (Throwable e) {
                     ArkEventException aee = new ArkEventException(e, filterSubscriber, strategy, event, nonNullArgs);
                     handler.handle(aee);
@@ -351,15 +343,6 @@ public class DefaultArkEventPublisher implements ArkEventPublisher {
                 throw e;
             }
         }
-
-        /*try {
-            executors.forEach(PublishExecutor::exec);
-        } catch (Throwable e) {
-            for (ArkEventPublishListener publishListener : publishListeners) {
-                publishListener.onPublishError(e, event, nonNullArgs);
-            }
-            throw e;
-        }*/
 
         for (ArkEventPublishListener publishListener : publishListeners) {
             publishListener.onPublishCompleted(event, nonNullArgs);
