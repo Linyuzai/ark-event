@@ -7,7 +7,7 @@ import java.lang.annotation.*;
 
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-@Import(ArkEventConfigurationSelector.class)
+@Import({ArkEventConfigurationSelector.class, ArkEventRxJava3AutoConfiguration.class})
 public @interface EnableArkEvent {
 
     boolean mq() default false;

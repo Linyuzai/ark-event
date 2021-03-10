@@ -4,6 +4,7 @@ import com.github.linyuzai.arkevent.core.ArkEventSubscriber;
 import com.github.linyuzai.arkevent.support.ArkEventArgsPair;
 import io.reactivex.rxjava3.core.BackpressureStrategy;
 import io.reactivex.rxjava3.core.Flowable;
+import io.reactivex.rxjava3.core.FlowableEmitter;
 import io.reactivex.rxjava3.disposables.Disposable;
 
 public interface RxJava3FlowableArkEventSubscriber extends ArkEventSubscriber {
@@ -12,7 +13,7 @@ public interface RxJava3FlowableArkEventSubscriber extends ArkEventSubscriber {
 
     BackpressureStrategy getMode();
 
-    default void onDisposableCreated(Disposable disposable) {
+    default void onCreated(FlowableEmitter<ArkEventArgsPair> emitter, Disposable disposable) {
 
     }
 }

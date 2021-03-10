@@ -23,7 +23,7 @@ public class RxJava3ObservableArkEventPublishStrategy implements ArkEventPublish
         Observable<ArkEventArgsPair> o = Observable.create(this);
         subscriber.observe(o);
         Disposable disposable = o.subscribe(this);
-        subscriber.onDisposableCreated(disposable);
+        subscriber.onCreated(emitter, disposable);
     }
 
     @Override

@@ -25,7 +25,7 @@ public class RxJava3FlowableArkEventPublishStrategy implements ArkEventPublishSt
         Flowable<ArkEventArgsPair> f = Flowable.create(this, subscriber.getMode());
         subscriber.flow(f);
         Disposable disposable = f.subscribe(this);
-        subscriber.onDisposableCreated(disposable);
+        subscriber.onCreated(emitter, disposable);
     }
 
     @Override
